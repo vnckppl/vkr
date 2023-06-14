@@ -12,7 +12,7 @@
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
-my_lm_wrapper <-
+batch_lm_wrapper <-
     function(df, outcomes, predictors, covariates = NULL, verbose = FALSE) {
 
         ## * Output data frame
