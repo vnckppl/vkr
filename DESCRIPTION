@@ -1,0 +1,27 @@
+Package: vkr
+Type: Package
+Title: Vincent Koppelmans R Scripts
+Version: 0.0.0.9100
+Authors@R: 
+    person(given = "Vincent",
+           family = "Koppelmans",
+           role = c("aut", "cre"),
+           email = "vincent.koppelmans@utah.edu",
+           comment = c(ORCID = "0000-0003-2036-7603"))
+Description: Miscellaneous Personal Functions.
+Depends: R (>= 4.1.0)
+License: `use_gpl3_license()`
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports:
+        tableHTML,
+        knitr,
+        kableExtra,
+        crayon,
+        ggplot2,
+        psych,
+        ggpubr
+URL: https://github.com/vnckppl/vkr
+BugReports: https://github.com/vnckppl/vkr/issues
