@@ -4,10 +4,15 @@
 \alias{df2orgtable}
 \title{Convert a data frame to an org table and print it}
 \usage{
-df2orgtable(df)
+df2orgtable(df, colorizep = FALSE, thold = 0.05)
 }
 \arguments{
 \item{df}{Name of a data element in your working environment}
+
+\item{colorizep}{Find columns ending in 'p' or 'fdr' and color the values
+smaller than the threshold}
+
+\item{thold}{Threshold for coloring}
 }
 \description{
 Convert a data frame to an org table and print it
