@@ -13,7 +13,7 @@
 #' @param covs One or more covariates that you want to take into account
 #' @export
 
-zsrb <-
+zsrb_simple <-
     function(idf, t1, t2, group1, group2, ref, covs = NULL) {
 
         ## * Select only columns with the Variables of interest
