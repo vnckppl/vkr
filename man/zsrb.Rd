@@ -2,7 +2,7 @@
 % Please edit documentation in R/zsrb.R
 \name{zsrb}
 \alias{zsrb}
-\title{Calculate the Simple Standard Regression Based Change Score}
+\title{Calculate the Simple or Complex Standard Regression Based Change Score}
 \usage{
 zsrb(idf, t1, t2, group, ref = NULL, covs = NULL)
 }
