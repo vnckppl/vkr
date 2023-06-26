@@ -87,13 +87,22 @@ zsrb <- function(idf, t1, t2, group, ref = NULL, covs = NULL) {
         for (covar in covs) {
             ## *** For numeric covariates
             # There is one beta, so simply add the effect
-            if (class(idf[[covar]]) == "numeric") {
+            if (
+                class(idf[[covar]]) == "numeric" ||
+                class(idf[[covar]]) == "integer")
+            {
                 idf[[t2_prime]] <- idf[[t2_prime]] +
                     idf[[covar]] * coeffs[covar, "Estimate"]
 
-                ## *** For categorical covariates
-                # There are one or more betas in this case, so we need to take
-                # all of them into account
+            ## *** For difftime variables
+            # This works the same as numeric variables
+            } else if (class(idf[[covar]]) == "difftime") {
+                idf[[t2_prime]] <- idf[[t2_prime]] +
+                    as.numeric(idf[[covar]]) * coeffs[covar, "Estimate"]
+
+            ## *** For categorical covariates
+            # There are one or more betas in this case, so we need to take
+            # all of them into account
             } else if (class(idf[[covar]]) == "factor") {
                 ## **** Loop over levels of the factor variable
                 # We skip the first factor level, because that is the
@@ -110,12 +119,12 @@ zsrb <- function(idf, t1, t2, group, ref = NULL, covs = NULL) {
                     # But only do this for the rows where the covariate is
                     # that covariate level (e.g., if there is a beta for
                     # males, then only apply that to the rows with males)
-                    idf[[t2_prime]][idf[[covar]] == facname] <-
-                        idf[[t2_prime]][idf[[covar]] == facname] +
+                    idf[[t2_prime]][idf[[covar]] == fact] <-
+                        idf[[t2_prime]][idf[[covar]] == fact] +
                         coeffs[facname, "Estimate"]
-                    
+
                 }
-            }   
+            }
         }
     }
 
@@ -130,7 +139,7 @@ zsrb <- function(idf, t1, t2, group, ref = NULL, covs = NULL) {
 
     ## * Now calculate the zSRB
     zsrb_var <- paste("zsrb", t1, t2, sep = "_")
-    zsrb_score <- t2_diff / see 
+    zsrb_score <- t2_diff / see
     idf[[zsrb_var]] <- zsrb_score
 
     ## * Return the output data frame and some parameters
