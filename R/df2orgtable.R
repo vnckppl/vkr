@@ -40,12 +40,19 @@ df2orgtable <- function(df, colorizep = FALSE, thold = 0.05) {
             # not color the same variable twice, because mutiple p-values on
             # the row are surpassing the threshold).
             ## ***** Outcome measure
-            df[[1]][df[[pcol]] < thold & !grep("¡", df[[1]])] <-
-                    paste0("¡ty1¡", df[[1]][df[[pcol]] < thold], "¡/ty1¡")
+            df[[1]][df[[pcol]] < thold & !grepl("¡", df[[1]])] <-
+                paste0(
+                    "¡ty1¡",
+                    df[[1]][df[[pcol]] < thold & !grepl("¡", df[[1]])],
+                    "¡/ty1¡"
+                )
 
             ## ***** Predictor
-            df[[1]][df[[pcol]] < thold & !grep("¡", df[[2]])] <-
-                   paste0("¡ty2¡", df[[2]][df[[pcol]] < thold], "¡/ty2¡")
+            df[[2]][df[[pcol]] < thold & !grepl("¡", df[[2]])] <-
+                paste0(
+                    "¡ty2¡",
+                    df[[2]][df[[pcol]] < thold & !grepl("¡", df[[2]])],
+                    "¡/ty2¡")
         }
 
         ## ** FDR corrected p-values
