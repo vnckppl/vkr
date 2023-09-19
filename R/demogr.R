@@ -50,8 +50,12 @@ demogr <- function(idf, voi, group) {
   if (vartype == "numeric") {
 
     ## *** Calculate mean and sd
-    my_means <- aggregate(idf[[voi]], list(idf[[group]]), FUN = mean)
-    my_stdev <- aggregate(idf[[voi]], list(idf[[group]]), FUN = sd)
+      my_means <- aggregate(
+          idf[[voi]], list(idf[[group]]), FUN = mean, na.rm = TRUE
+      )
+      my_stdev <- aggregate(
+          idf[[voi]], list(idf[[group]]), FUN = sd, na.rm = TRUE
+      )
 
     ## *** Test for group differences
     model1 <- lm(idf[[voi]] ~ idf[[group]])
