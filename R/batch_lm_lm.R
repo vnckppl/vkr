@@ -27,11 +27,15 @@ batch_lm <- function(
     ## ** Collapse covariates for linear model
     covariates <- paste(covariates, collapse = " + ")
 
+    ## ** Remove rows where there the predictor or outcome measure are NA
+    df <- df[!is.na(df[[predictor]]) & !is.na(df[[outcome]]), ]
+
     ## ** Test if the predictor variable is numeric or categorical
     pred_class <- class(df[[predictor]])
 
     ## ** If the predictor is a factor variable, then...
-    if (pred_class == "factor") {
+    # if (pred_class == "factor") {
+    if ("factor" %in% class(df[["group2_v3"]])) {
 
         ## *** Remove unused levels
         df[[predictor]] <- droplevels(df[[predictor]])
@@ -92,7 +96,8 @@ batch_lm <- function(
     odf_vars <- NULL
 
     ## ** If the predictor is a factor variable, then...
-    if (pred_class == "factor") {
+    # if (pred_class == "factor") {
+    if ("factor" %in% class(df[["group2_v3"]])) {
 
         ## *** Loop over groups levels to grab the estimates and p-values
         for (gr in seq(2, length(grvars))) {
