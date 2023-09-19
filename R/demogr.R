@@ -36,6 +36,14 @@ demogr <- function(idf, voi, group) {
     vartype <- "numeric"
   } else if (length(grep("factor", class(idf[[voi]]))) > 0) {
     vartype <- "factor"
+  } else if (length(grep("character", class(idf[[voi]]))) > 0) {
+      print(paste0(
+          "[ERROR]: `", voi, "` is a character variable. Can't proceed"
+      ))
+  } else if (length(grep("integer", class(idf[[voi]]))) > 0) {
+      print(paste0(
+          "[ERROR]: `", voi, "` is an integer variable. Can't proceed"
+      ))
   }
 
   ## ** Numeric variables
