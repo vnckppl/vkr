@@ -118,7 +118,7 @@ demogr <- function(idf, voi, group) {
     factors <- levels(idf[[voi]])
 
     ## *** Number and proportion of first category (should be reference)
-    ref_n <- table(idf[[voi]][idf[[group]] == idf[[group]][1]])
+    ref_n <- table(idf[[voi]][idf[[group]] == groups[1]])
     ref_p <- round((ref_n / sum(ref_n)) * 100, 2)
     odf <- as.data.frame(cbind(ref_n, ref_p))
     names(odf) <- c(paste0(groups[1], "_n"), paste0(groups[1], "_p"))
