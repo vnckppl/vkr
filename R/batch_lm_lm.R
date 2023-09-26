@@ -62,7 +62,7 @@ batch_lm <- function(
         my_formula_emm <- paste(outcome, "~", covariates, "+", predictor)
 
         ## ** ...otherwise, if the predictor is a numeric variable, then...
-    } else if (pred_class == "numeric") {
+    } else if (length(grep("numeric", pred_class)) > 0) {
 
         ## *** Build formula for linear model
         my_formula <- my_formula_emm <-
@@ -131,7 +131,7 @@ batch_lm <- function(
         odf_vars <- c(odf_vars, "n")
 
         ## ** ...otherwise, if the predictor is a numeric variable, then...
-    } else if (pred_class == "numeric") {
+    } else if (length(grep("numeric", pred_class)) > 0) {
 
         pr_est <- formatC(
             round(my_coeff[predictor, "Estimate"], 2), format = "f", digits = 2)
