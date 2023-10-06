@@ -6,6 +6,7 @@
 #' @importFrom moments "skewness"
 #' @importFrom moments "kurtosis"
 #' @importFrom moments "jarque.test"
+#' @importFrom Hmisc "label"
 #' @param df Input data frame
 #' @param inputs List of input variables that are being processed
 #' @param transform If TRUE, apply log transformation
@@ -243,12 +244,19 @@ normalize <-
                 figfile <- file.path(plotdir, paste0("density_", var, ".pdf"))
                 pdf(figfile, width = 10, height = 10)
 
+                ## *** Check if a variable label is available
+                if (Hmisc::label(df[[var]]) == "") {
+                    plottitle <- var
+                } else {
+                    plottitle <- Hmisc::label(df[[var]])
+                }
+
                 ## **** Raw data
                 plot(
                     mydensity_rd,
                     ylim = c(0, 1.02 * maxy4fig),
                     xlim = c(0.98 * minx4fig, 1.02 * maxx4fig),
-                    main = var
+                    main = plottitle
                 )
 
                 ## **** Square root transformation
