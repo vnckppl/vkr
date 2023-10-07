@@ -11,6 +11,7 @@ batch_lmer_wrapper(
   predictors,
   reffect,
   covariates = NULL,
+  numdec = 2,
   verbose = FALSE
 )
 }
@@ -24,6 +25,8 @@ batch_lmer_wrapper(
 \item{reffect}{Random Effect variable}
 
 \item{covariates}{Single covariate or array of covariates}
+
+\item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }

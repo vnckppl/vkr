@@ -10,6 +10,7 @@
 #' @param predictors Predictor(s) to loop over
 #' @param reffect Random Effect variable
 #' @param covariates Single covariate or array of covariates
+#' @param numdec Number of decimals for the beta and std statistics
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -20,6 +21,7 @@ batch_lmer_wrapper <-
              predictors,
              reffect,
              covariates = NULL,
+             numdec = 2,
              verbose = FALSE
              ) {
 
@@ -39,6 +41,7 @@ batch_lmer_wrapper <-
                                            pred,
                                            reffect,
                                            covariates,
+                                           numdec,
                                            verbose
                                        ))
             }

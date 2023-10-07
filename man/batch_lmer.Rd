@@ -4,7 +4,15 @@
 \alias{batch_lmer}
 \title{Print summary statistics for a linear mixed-effects model}
 \usage{
-batch_lmer(df, outcome, predictor, reffect, covariates = NULL, verbose = FALSE)
+batch_lmer(
+  df,
+  outcome,
+  predictor,
+  reffect,
+  covariates = NULL,
+  numdec = 2,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{df}{Input data frame}
@@ -16,6 +24,8 @@ batch_lmer(df, outcome, predictor, reffect, covariates = NULL, verbose = FALSE)
 \item{reffect}{Random Effect variable}
 
 \item{covariates}{Single covariate or array of covariates}
+
+\item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }

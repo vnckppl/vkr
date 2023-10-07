@@ -5,7 +5,14 @@
 \title{Run batch_lm and subsquently batch_lm_fdr on a number of predictor and
 outcome variables.}
 \usage{
-batch_lm_wrapper(df, outcomes, predictors, covariates = NULL, verbose = FALSE)
+batch_lm_wrapper(
+  df,
+  outcomes,
+  predictors,
+  covariates = NULL,
+  numdec = 2,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{df}{Input data frame}
@@ -15,6 +22,8 @@ batch_lm_wrapper(df, outcomes, predictors, covariates = NULL, verbose = FALSE)
 \item{predictors}{Predictor(s) to loop over}
 
 \item{covariates}{Single covariate or array of covariates}
+
+\item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }

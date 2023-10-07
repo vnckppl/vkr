@@ -9,11 +9,19 @@
 #' @param outcomes Outcome measure(s) to loop over
 #' @param predictors Predictor(s) to loop over
 #' @param covariates Single covariate or array of covariates
+#' @param numdec Number of decimals for the beta and std statistics
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
 batch_lm_wrapper <-
-    function(df, outcomes, predictors, covariates = NULL, verbose = FALSE) {
+    function(
+             df,
+             outcomes,
+             predictors,
+             covariates = NULL,
+             numdec = 2,
+             verbose = FALSE
+             ) {
 
         ## * Output data frame
         odf <- NULL
@@ -30,6 +38,7 @@ batch_lm_wrapper <-
                                            outc,
                                            pred,
                                            covariates,
+                                           numdec,
                                            verbose
                                        ))
             }

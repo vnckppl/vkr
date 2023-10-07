@@ -19,6 +19,7 @@
 #' @param predictor Predictor
 #' @param reffect Random Effect variable
 #' @param covariates Single covariate or array of covariates
+#' @param numdec Number of decimals for the beta and std statistics
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -27,6 +28,7 @@ batch_lmer <- function(df,
                        predictor,
                        reffect,
                        covariates = NULL,
+                       numdec = 2,
                        verbose = FALSE
                        ) {
 
@@ -111,9 +113,11 @@ batch_lmer <- function(df,
             ## **** Grab info per group
             grp <- grvars[gr]
             gr_est <- formatC(
-                round(my_coeff[grp, "Estimate"], 2), format = "f", digits = 2)
+                round(my_coeff[grp, "Estimate"], numdec),
+                format = "f", digits = numdec)
             gr_std <- formatC(
-                round(my_coeff[grp, "Std. Error"], 2), format = "f", digits = 2)
+                round(my_coeff[grp, "Std. Error"], numdec),
+                format = "f", digits = numdec)
             gr_pvl <- formatC(
                 round(my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
             # Store unrounded p-values for FDR correction (done separately)
@@ -142,11 +146,12 @@ batch_lmer <- function(df,
     } else if (pred_class == "numeric") {
 
         pr_est <- formatC(
-            round(my_coeff[predictor, "Estimate"], 2), format = "f", digits = 2)
+            round(my_coeff[predictor, "Estimate"], numdec),
+            format = "f", digits = numdec)
         pr_std <- formatC(
             round(
-                my_coeff[predictor, "Std. Error"], 2), format = "f", digits = 2
-        )
+                my_coeff[predictor, "Std. Error"], numdec),
+            format = "f", digits = numdec)
         pr_pvl <- formatC(
             round(my_coeff[predictor, "Pr(>|t|)"], 4), format = "f", digits = 4)
         # Store unrounded p-values for FDR correction (done separately)

@@ -4,7 +4,14 @@
 \alias{batch_lm}
 \title{Print summary statistics for a linear model}
 \usage{
-batch_lm(df, outcome, predictor, covariates = NULL, verbose = FALSE)
+batch_lm(
+  df,
+  outcome,
+  predictor,
+  covariates = NULL,
+  numdec = 2,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{df}{Input data frame}
@@ -14,6 +21,8 @@ batch_lm(df, outcome, predictor, covariates = NULL, verbose = FALSE)
 \item{predictor}{Predictor}
 
 \item{covariates}{Single covariate or array of covariates}
+
+\item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }
