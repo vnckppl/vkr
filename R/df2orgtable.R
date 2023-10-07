@@ -4,8 +4,16 @@
 #' @param colorizep When set to 'auto', it will find columns ending in 'p' or
 #' 'fdr' and color the values smaller than the threshold
 #' @param thold Threshold for coloring
+#' @param rownames If set to TRUE, print rownames in output table. If set to
+#' a string, use this as the header of the rownames column and include it in the
+#' output
 #' @export
-df2orgtable <- function(df, colorizep = FALSE, thold = 0.05) {
+df2orgtable <- function(
+                        df,
+                        colorizep = FALSE,
+                        thold = 0.05,
+                        rownames = FALSE
+                        ) {
 
     ## * Colorize p-values
     ## If set to auto: find p and fdr columsn and color them according to the
@@ -84,6 +92,16 @@ df2orgtable <- function(df, colorizep = FALSE, thold = 0.05) {
             "column name and color pairs to define which columns should be",
             "colored how."
         ))
+    }
+
+    ## * Include rownames column if requested
+    if (rownames != FALSE) {
+        df <- cbind(rownames(df), df)
+        if (rownames == TRUE) {
+            names(df)[1] <- "Row Name"
+        } else {
+            names(df)[1] <- rownames
+        }
     }
 
     ## * Header of the data frame

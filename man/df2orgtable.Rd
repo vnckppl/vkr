@@ -4,7 +4,7 @@
 \alias{df2orgtable}
 \title{Convert a data frame to an org table and print it}
 \usage{
-df2orgtable(df, colorizep = FALSE, thold = 0.05)
+df2orgtable(df, colorizep = FALSE, thold = 0.05, rownames = FALSE)
 }
 \arguments{
 \item{df}{Name of a data element in your working environment}
@@ -13,6 +13,10 @@ df2orgtable(df, colorizep = FALSE, thold = 0.05)
 'fdr' and color the values smaller than the threshold}
 
 \item{thold}{Threshold for coloring}
+
+\item{rownames}{If set to TRUE, print rownames in output table. If set to
+a string, use this as the header of the rownames column and include it in the
+output}
 }
 \description{
 Convert a data frame to an org table and print it
