@@ -18,6 +18,8 @@
 #' from the lmPerm package, i.e., fitting and testing linear models with
 #' permutation tests. Ca=Stop iterations when estimated standard error of the
 #' estimated p is less than Ca*p. maxIter=The maximum number of iterations.
+#' Note that this is a random permutation method, but the seed has been
+#' explicitely set to 357 so that results will be replicable.
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -40,6 +42,8 @@ batch_lm <- function(
         lmp_maxiter <- np[2]
         npset <- TRUE
         if (verbose) print("Running non-parametric linear models")
+    } else {
+        npset <- FALSE
     }
 
     ## ** Collapse covariates for linear model
@@ -85,6 +89,7 @@ batch_lm <- function(
     if (npset != TRUE) {
         my_model <- lm(formula = my_formula, data = df, na.action = na.exclude)
     } else {
+        set.seed(357)
         my_model <- lmPerm::lmp(formula = as.formula(my_formula),
                                 data = df,
                                 na.action = na.exclude,
@@ -140,16 +145,19 @@ batch_lm <- function(
                 gr_pvl <- formatC(round(
                     my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
             } else {
+                ## gr_pvl <- formatC(round(
+                ##     as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"], 4),
+                ##     format = "f", digits = 4)
                 gr_pvl <- formatC(round(
-                    as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"], 4),
-                    format = "f", digits = 4)
+                    my_coeff[grp, "Pr(Prob)"], 4), format = "f", digits = 4)
             }
 
             ## *****  Store unrounded p-values for FDR correction
             if (npset != TRUE) {
                 gr_fdr <- my_coeff[grp, "Pr(>|t|)"]
             } else {
-                gr_fdr <- as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"]
+                ## gr_fdr <- as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"]
+                gr_fdr <- my_coeff[grp, "Pr(Prob)"]
             }
 
             ## ***** Effect size
@@ -195,8 +203,11 @@ batch_lm <- function(
                 round(my_coeff[predictor, "Pr(>|t|)"], 4),
                 format = "f", digits = 4)
         } else {
-            pr_pvl <- formatC(round(
-                as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"], 4),
+            ## pr_pvl <- formatC(round(
+            ##     as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"], 4),
+            ##     format = "f", digits = 4)
+            pr_pvl <- formatC(
+                round(my_coeff[predictor, "Pr(Prob)"], 4),
                 format = "f", digits = 4)
         }
 
@@ -204,7 +215,8 @@ batch_lm <- function(
         if (npset != TRUE) {
             pr_fdr <- my_coeff[predictor, "Pr(>|t|)"]
         } else {
-            pr_fdr <- as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"]
+            ## pr_fdr <- as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"]
+            pr_fdr <- my_coeff[predictor, "Pr(Prob)"]
         }
 
         ## *** Eta-squared

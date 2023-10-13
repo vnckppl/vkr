@@ -28,7 +28,9 @@ batch_lm(
 \item{np}{If set with two values (Ca and maxIter), the code will run lmp,
 from the lmPerm package, i.e., fitting and testing linear models with
 permutation tests. Ca=Stop iterations when estimated standard error of the
-estimated p is less than Ca*p. maxIter=The maximum number of iterations.}
+estimated p is less than Ca*p. maxIter=The maximum number of iterations.
+Note that this is a random permutation method, but the seed has been
+explicitely set to 357 so that results will be replicable.}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }
