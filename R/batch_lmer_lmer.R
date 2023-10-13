@@ -46,7 +46,7 @@ batch_lmer <- function(df,
 
     ## ** If the predictor is a factor variable, then...
     # if (pred_class == "factor") {
-    if ("factor" %in% class(df[["group2_v3"]])) {
+    if ("factor" %in% class(df[[predictor]])) {
 
         ## *** Remove unused levels
         df[[predictor]] <- droplevels(df[[predictor]])
@@ -105,7 +105,7 @@ batch_lmer <- function(df,
 
     ## ** If the predictor is a factor variable, then...
     # if (pred_class == "factor") {
-    if ("factor" %in% class(df[["group2_v3"]])) {
+    if ("factor" %in% class(df[[predictor]])) {
 
         ## *** Loop over groups levels to grab the estimates and p-values
         for (gr in seq(2, length(grvars))) {
