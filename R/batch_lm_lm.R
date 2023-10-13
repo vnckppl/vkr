@@ -7,11 +7,17 @@
 #' for all levels of the facor variable (except the first level, that will be
 #' the reference categorie)
 #'
+#' @importFrom lmPerm "lmp"
+#' @importFrom car "Anova"
 #' @param df Input data frame
 #' @param outcome Outcome measure
 #' @param predictor Predictor
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
+#' @param np If set with two values (Ca and maxIter), the code will run lmp,
+#' from the lmPerm package, i.e., fitting and testing linear models with
+#' permutation tests. Ca=Stop iterations when estimated standard error of the
+#' estimated p is less than Ca*p. maxIter=The maximum number of iterations.
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -21,11 +27,20 @@ batch_lm <- function(
                      predictor,
                      covariates = NULL,
                      numdec = 2,
+                     np = FALSE,
                      verbose = FALSE
                      ) {
 
     ## ** Disable scientific notations
     options(scipen = 999)
+
+    ## ** Parse non-parametric information
+    if (is.numeric(np[1]) && is.numeric(np[2])) {
+        lmp_ca <- np[1]
+        lmp_maxiter <- np[2]
+        npset <- TRUE
+        if (verbose) print("Running non-parametric linear models")
+    }
 
     ## ** Collapse covariates for linear model
     covariates <- paste(covariates, collapse = " + ")
@@ -59,31 +74,28 @@ batch_lm <- function(
         grvars_model <- paste(grvars[2:length(grvars)], collapse = " + ")
         my_formula <- paste(outcome, "~", covariates, "+", grvars_model)
 
-        ## *** Build formula for linear model for Estimated Marginal Means
-        # This requires a model where the factor variables is a single
-        # variable, not dummies.
-        my_formula_emm <- paste(outcome, "~", covariates, "+", predictor)
-
         ## ** ...otherwise, if the predictor is a numeric variable, then...
     } else if (length(grep("numeric", pred_class)) > 0) {
 
         ## *** Build formula for linear model
-        my_formula <- my_formula_emm <-
-            paste(outcome, "~", covariates, "+", predictor)
+        my_formula <- paste(outcome, "~", covariates, "+", predictor)
     }
 
     ## ** Run linear model
-    my_model <- lm(formula = my_formula, data = df, na.action = na.exclude)
+    if (npset != TRUE) {
+        my_model <- lm(formula = my_formula, data = df, na.action = na.exclude)
+    } else {
+        my_model <- lmPerm::lmp(formula = as.formula(my_formula),
+                                data = df,
+                                na.action = na.exclude,
+                                Ca = lmp_ca,
+                                maxIter = lmp_maxiter)
+    }
     if (verbose) print(summary(my_model))
 
     ## ** Calculate effect sizes
     my_esize <- lsr::etaSquared(my_model)
     if (verbose) print(my_esize)
-
-    ## ** Estimated marginal means
-    my_model_emm <-
-        lm(formula = my_formula_emm, data = df, na.action = na.exclude)
-    my_emmeans <- ggeffects::ggpredict(my_model_emm, predictor)
 
     ## ** Extract the number of observations and dfs from the model
     my_model_sum <- summary(my_model)
@@ -106,24 +118,48 @@ batch_lm <- function(
         for (gr in seq(2, length(grvars))) {
 
             ## **** Grab info per group
+            ## ***** Group
             grp <- grvars[gr]
+
+            ## ***** Estimate
             gr_est <- formatC(
                 round(my_coeff[grp, "Estimate"], numdec),
                 format = "f", digits = numdec)
+
+            ## ***** Standard error
+            if (npset != TRUE) {
             gr_std <- formatC(
                 round(my_coeff[grp, "Std. Error"], numdec),
                 format = "f", digits = numdec)
-            gr_pvl <- formatC(
-                round(my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
-            # Store unrounded p-values for FDR correction (done separately)
-            gr_fdr <- my_coeff[grp, "Pr(>|t|)"]
+            } else {
+                gr_std <- NA
+            }
+
+            ## ***** P-value
+            if (npset != TRUE) {
+                gr_pvl <- formatC(round(
+                    my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
+            } else {
+                gr_pvl <- formatC(round(
+                    as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"], 4),
+                    format = "f", digits = 4)
+            }
+
+            ## *****  Store unrounded p-values for FDR correction
+            if (npset != TRUE) {
+                gr_fdr <- my_coeff[grp, "Pr(>|t|)"]
+            } else {
+                gr_fdr <- as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"]
+            }
+
+            ## ***** Effect size
             gr_eta <- formatC(
                 round(my_esize[grp, "eta.sq"], 2), format = "f", digits = 2)
 
-            ## **** Combine this information
+            ## ***** Combine this information
             odf <- rbind(odf, gr_est, gr_std, gr_pvl, gr_fdr, gr_eta)
 
-            ## **** Variable labels
+            ## ***** Variable labels
             odf_vars <- c(
                 odf_vars,
                 paste(
@@ -138,24 +174,47 @@ batch_lm <- function(
         ## ** ...otherwise, if the predictor is a numeric variable, then...
     } else if (length(grep("numeric", pred_class)) > 0) {
 
+        ## *** Estimate
         pr_est <- formatC(
             round(my_coeff[predictor, "Estimate"], numdec),
             format = "f", digits = numdec)
-        pr_std <- formatC(
-            round(
-                my_coeff[predictor, "Std. Error"], numdec),
-            format = "f", digits = numdec)
-        pr_pvl <- formatC(
-            round(my_coeff[predictor, "Pr(>|t|)"], 4), format = "f", digits = 4)
-        # Store unrounded p-values for FDR correction (done separately)
-        pr_fdr <- my_coeff[predictor, "Pr(>|t|)"]
+
+        ## *** Standard Error
+        if (npset != TRUE) {
+            pr_std <- formatC(
+                round(
+                    my_coeff[predictor, "Std. Error"], numdec),
+                format = "f", digits = numdec)
+        } else {
+            pr_std <- NA
+        }
+
+        ## *** P-value
+        if (npset != TRUE) {
+            pr_pvl <- formatC(
+                round(my_coeff[predictor, "Pr(>|t|)"], 4),
+                format = "f", digits = 4)
+        } else {
+            pr_pvl <- formatC(round(
+                as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"], 4),
+                format = "f", digits = 4)
+        }
+
+        ## *** Store unrounded p-values for FDR correction (done separately)
+        if (npset != TRUE) {
+            pr_fdr <- my_coeff[predictor, "Pr(>|t|)"]
+        } else {
+            pr_fdr <- as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"]
+        }
+
+        ## *** Eta-squared
         pr_eta <- formatC(
             round(my_esize[predictor, "eta.sq"], 2), format = "f", digits = 2)
 
-        ## **** Combine this information
+        ## *** Combine this information
         odf <- rbind(pr_est, pr_std, pr_pvl, pr_fdr, pr_eta, my_n_to)
 
-        ## **** Variable labels
+        ## *** Variable labels
         odf_vars <- c("beta", "std", "p", "fdr", "eta2", "n")
 
     }

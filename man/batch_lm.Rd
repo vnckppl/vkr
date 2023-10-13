@@ -10,6 +10,7 @@ batch_lm(
   predictor,
   covariates = NULL,
   numdec = 2,
+  np = FALSE,
   verbose = FALSE
 )
 }
@@ -23,6 +24,11 @@ batch_lm(
 \item{covariates}{Single covariate or array of covariates}
 
 \item{numdec}{Number of decimals for the beta and std statistics}
+
+\item{np}{If set with two values (Ca and maxIter), the code will run lmp,
+from the lmPerm package, i.e., fitting and testing linear models with
+permutation tests. Ca=Stop iterations when estimated standard error of the
+estimated p is less than Ca*p. maxIter=The maximum number of iterations.}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }
