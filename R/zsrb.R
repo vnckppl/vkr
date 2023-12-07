@@ -44,6 +44,11 @@ zsrb <- function(idf, t1, t2, group, ref = NULL, covs = NULL) {
         cdf <- cdf[cdf[[group[grn]]] == ref, ]
     }
 
+    ## *** Remove rownames with NA in the name
+    # The previous command can result in rows with 'NA' in the rowname. These
+    # rows are compeltely empty. Remove them.
+    cdf <- cdf[!grepl("NA", rownames(cdf)), ]
+
     ## ** Count the total number of subjects after selection
     nrow_a2 <- nrow(cdf)
 

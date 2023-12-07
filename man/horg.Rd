@@ -4,13 +4,19 @@
 \alias{horg}
 \title{Print a nice header for Emacs org-mode output}
 \usage{
-horg(my_text, hlstyle = c("my", "mo", "fr", "fp", "fb", "mc", "fa", "mg"))
+horg(
+  my_text,
+  hlstyle = c("my", "mo", "fr", "fp", "fb", "mc", "fa", "mg"),
+  numn = 0
+)
 }
 \arguments{
 \item{my_text}{Text that you want to highlight}
 
 \item{hlstyle}{Highligh style: YELLOW, ORANGE, red, purple, blue, cyan,
 aquamarine, green}
+
+\item{numn}{Number of new lines (default = 0)}
 }
 \description{
 This function prints nice headers around a string input.
