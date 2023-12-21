@@ -38,6 +38,9 @@ demogr <- function(idf, voi, group) {
         )
     }
 
+    ## ** Remove groups with no observations
+    idf[[group]] <- droplevels(idf[[group]])
+
     ## ** Group levels
     groups <- levels(idf[[group]])
 
