@@ -113,7 +113,7 @@ demogr <- function(idf, voi, group) {
         ## **** First group in groups variable (should be control)
         labels_a <- c(
             "variable",
-            paste0(groups[1], "_mean"),
+            paste0(groups[1], "_m"),
             paste0(groups[1], "_sd")
         )
 
@@ -122,14 +122,14 @@ demogr <- function(idf, voi, group) {
         for (gr in seq(2, length(groups))) {
             labels_b <- rbind(
                 labels_b,
-                paste0(groups[[gr]], "_mean"),
+                paste0(groups[[gr]], "_m"),
                 paste0(groups[[gr]], "_sd"),
                 paste0(groups[1], "-", groups[[gr]], "_p")
             )
         }
 
         ## **** Information from all other groups in group variable
-        labels_c <- c("all_mean", "all_sd", "all_n")
+        labels_c <- c("all_m", "all_sd", "all_n")
 
         ## *** Merge the information
         odf <- as.data.frame(t(c(output_a, output_b, output_c)))
@@ -147,7 +147,7 @@ demogr <- function(idf, voi, group) {
         ref_n <- table(idf[[voi]][idf[[group]] == groups[1]])
         ref_p <- round((ref_n / sum(ref_n)) * 100, 2)
         odf <- as.data.frame(cbind(ref_n, ref_p))
-        names(odf) <- c(paste0(groups[1], "_n"), paste0(groups[1], "_p"))
+        names(odf) <- c(paste0(groups[1], "_n"), paste0(groups[1], "_pr"))
 
         ## *** Loop over other categories
         for (gr in seq(2, length(groups))) {
@@ -178,8 +178,8 @@ demogr <- function(idf, voi, group) {
             # Labels
             names(tmp_df) <- c(
                 paste0(groups[gr], "_n"),
-                paste0(groups[gr], "_p"),
-                paste0(groups[1], "_vs_", groups[gr], "_pval")
+                paste0(groups[gr], "_pr"),
+                paste0(groups[1], "-", groups[gr], "_p")
             )
 
             odf <- as.data.frame(cbind(odf, tmp_df))
@@ -188,8 +188,8 @@ demogr <- function(idf, voi, group) {
 
         ## *** Add number and proportion of entire sample
         all_n <- table(idf[[voi]])
-        all_p <- round((all_n / sum(all_n)) * 100, 2)
-        odf <- cbind(odf, as.data.frame(cbind(all_n, all_p)))
+        all_pr <- round((all_n / sum(all_n)) * 100, 2)
+        odf <- cbind(odf, as.data.frame(cbind(all_n, all_pr)))
 
         ## **** Save variable name in odf and set rownames as column
         varname <- c(voi, rep("", length(factors) - 1))
@@ -210,7 +210,7 @@ demogr <- function(idf, voi, group) {
 
         all_pval_array <-
             as.data.frame(c(all_pval, rep("", length(factors) - 1)))
-        names(all_pval_array) <- "all_pval"
+        names(all_pval_array) <- "all_p"
         odf <- cbind(odf, all_pval_array)
 
     }
