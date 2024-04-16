@@ -112,7 +112,7 @@ demogr <- function(idf, voi, group) {
         ## *** Define variabel labels
         ## **** First group in groups variable (should be control)
         labels_a <- c(
-            "variable",
+            "Variable",
             paste0(groups[1], "_m"),
             paste0(groups[1], "_sd")
         )
