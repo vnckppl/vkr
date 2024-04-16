@@ -9,17 +9,6 @@
 #' @export
 insert_column <- function(df, position, colname, values) {
 
-    ## * Split up the data frame columns at the position point
-    ## ** If position is a number
-    if (is.numeric(position)) {
-        posloc <- position
-    } else if (is.character(position)) {
-        ## ** If the position is a column name
-        posloc <- grep(position, names(df))
-    }
-    part1 <- df[1:posloc]
-    part2 <- df[(posloc + 1):ncol(df)]
-
     ## * New column
     ## ** If a single value was entered create an array of length nrow
     if (length(values) == 1) {
@@ -30,10 +19,25 @@ insert_column <- function(df, position, colname, values) {
     newcol <- as.data.frame(valuesdf)
     names(newcol) <- colname
 
+    ## * Split up the data frame columns at the position point
+    ## ** If position is a number
+    if (is.numeric(position)) {
+        posloc <- position
+    } else if (is.character(position)) {
+        ## ** If the position is a column name
+        posloc <- which(names(df) == position)
+    }
+    part1 <- df[1:posloc]
+
     ## * Combine data frames
-    odf <- cbind(cbind(part1, newcol), part2)
+    ## ** If you are adding a column after the last column, there is no part 2
+    if (posloc == ncol(df)) {
+        odf <- cbind(part1, newcol)
+    } else {
+        part2 <- df[(posloc + 1):ncol(df)]
+        odf <- cbind(part1, newcol, part2)
+    }
 
     ## * Return column
     return(odf)
-
 }
