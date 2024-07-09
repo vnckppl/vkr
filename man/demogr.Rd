@@ -4,7 +4,7 @@
 \alias{demogr}
 \title{Print demograhics for a variable by group}
 \usage{
-demogr(idf, voi, group)
+demogr(idf, voi, group, mediqr = FALSE)
 }
 \arguments{
 \item{idf}{Input data frame}
@@ -12,6 +12,8 @@ demogr(idf, voi, group)
 \item{voi}{Variable of interest}
 
 \item{group}{Group variable to stratify the variable of interest by}
+
+\item{mediqr}{If TRUE, then calculate median/IQR instead of mean/stdev}
 }
 \description{
 This function prints demographics for a specific variable and stratifies this

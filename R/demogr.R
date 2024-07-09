@@ -12,8 +12,9 @@
 #' @param idf Input data frame
 #' @param voi Variable of interest
 #' @param group Group variable to stratify the variable of interest by
+#' @param mediqr If TRUE, then calculate median/IQR instead of mean/stdev
 #' @export
-demogr <- function(idf, voi, group) {
+demogr <- function(idf, voi, group, mediqr = FALSE) {
 
     ## ** Remove rows where group is NaN / NAs from the data frame
     n_old <- nrow(idf)
@@ -56,20 +57,35 @@ demogr <- function(idf, voi, group) {
         ))
     } else if (length(grep("integer", class(idf[[voi]]))) > 0) {
         print(paste0(
-            "[ERROR]: `", voi, "` is an integer variable. Can't proceed"
+            "[WARNING]: `", voi, "` is an integer variable. It will be ",
+            "converted to `numeric` now. If this is not correct, change the ",
+            "variable type prior to running `demogr.R`."
         ))
+        idf[voi] <- as.numeric(idf[voi])
+        vartype <- "numeric"
     }
 
     ## ** Numeric variables
     if (vartype == "numeric") {
 
-        ## *** Calculate mean and sd
-        my_means <- aggregate(
-            idf[[voi]], list(idf[[group]]), FUN = mean, na.rm = TRUE
-        )
-        my_stdev <- aggregate(
-            idf[[voi]], list(idf[[group]]), FUN = sd, na.rm = TRUE
-        )
+        ## *** Calculate mean and sd / median and IQR
+        # Calculate mean and sd
+        if (mediqr == FALSE) {
+            my_means <- aggregate(
+                idf[[voi]], list(idf[[group]]), FUN = mean, na.rm = TRUE
+            )
+            my_stdev <- aggregate(
+                idf[[voi]], list(idf[[group]]), FUN = sd, na.rm = TRUE
+            )
+        # Calculate median and IQR
+        } else if (mediqr == TRUE) {
+            my_means <- aggregate(
+                idf[[voi]], list(idf[[group]]), FUN = median, na.rm = TRUE
+            )
+            my_stdev <- aggregate(
+                idf[[voi]], list(idf[[group]]), FUN = IQR, na.rm = TRUE
+            )
+        }
 
         my_means_all <- mean(idf[[voi]])
         my_stdev_all <- sd(idf[[voi]])
