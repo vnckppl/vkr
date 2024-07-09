@@ -82,7 +82,7 @@ batch_lmer <- function(df,
     }
 
     ## ** Run linear mixed model model
-    if (glmmnb) {
+    if (glmmnb == TRUE) {
         my_model <-
             lme4::glmer.nb(
                       formula = my_formula,
@@ -90,7 +90,7 @@ batch_lmer <- function(df,
                       na.action = na.exclude,
                       family = "poisson"
                   )
-    } else {
+    } else if (glmmnb == FALSE) {
         my_model <-
             lmerTest::lmer(
                           formula = my_formula,
@@ -131,13 +131,13 @@ batch_lmer <- function(df,
                 round(my_coeff[grp, "Std. Error"], numdec),
                 format = "f", digits = numdec)
             # For Negative Binomial Models
-            if (glmmnb) {
+            if (glmmnb == TRUE) {
                 gr_pvl <- formatC(
                     round(my_coeff[grp, "Pr(>|z|)"], 4), format = "f", digits = 4)
                 # Store unrounded p-values for FDR correction (done separately)
                 gr_fdr <- my_coeff[grp, "Pr(>|z|)"]
             # For other (linear) models
-            } else if (!glmmnb) {
+            } else if (glmmnb == FALSE) {
                 gr_pvl <- formatC(
                     round(my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
                 # Store unrounded p-values for FDR correction (done separately)
@@ -174,13 +174,13 @@ batch_lmer <- function(df,
                 my_coeff[predictor, "Std. Error"], numdec),
             format = "f", digits = numdec)
         # For Negative Binomial Models
-        if (glmmnb) {
+        if (glmmnb == TRUE) {
             pr_pvl <- formatC(
                 round(my_coeff[predictor, "Pr(>|z|)"], 4), format = "f", digits = 4)
             # Store unrounded p-values for FDR correction (done separately)
             pr_fdr <- my_coeff[predictor, "Pr(>|z|)"]
         # For other (linear) models
-        } else if (!glmmnb) {
+        } else if (glmmnb == FALSE) {
             pr_pvl <- formatC(
                 round(my_coeff[predictor, "Pr(>|t|)"], 4), format = "f", digits = 4)
             # Store unrounded p-values for FDR correction (done separately)
