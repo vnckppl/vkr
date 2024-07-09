@@ -122,7 +122,7 @@ quick_pca <- function(input_data, rotation, out_path, out_name) {
                     dpi = 300, limitsize = TRUE
                     )
 
-    ## ** Re-run PCA with the optimal number of components and seleted rotation
+    ## ** Re-run PCA with the optimal number of components and selected rotation
     c.PCA2 <- psych::principal(
         input_data,
         nfactors = sum(c.PCA1$values > 1),
