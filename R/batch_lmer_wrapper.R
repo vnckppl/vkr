@@ -11,6 +11,7 @@
 #' @param reffect Random Effect variable
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
+#' @param glmmnb Set to TRUE if you want to use a Negative Binomial GLMM
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -22,6 +23,7 @@ batch_lmer_wrapper <-
              reffect,
              covariates = NULL,
              numdec = 2,
+             glmmnb = FALSE,
              verbose = FALSE
              ) {
 
@@ -36,13 +38,14 @@ batch_lmer_wrapper <-
 
                 ## *** Run linear models via batch_lm and append to output
                 odf <- rbind(odf, vkr::batch_lmer(
-                                           df,
-                                           outc,
-                                           pred,
-                                           reffect,
-                                           covariates,
-                                           numdec,
-                                           verbose
+                                           df = df,
+                                           outcome = outc,
+                                           predictor = pred,
+                                           reffect = reffect,
+                                           covariates = covariates,
+                                           numdec = numdec,
+                                           glmmnb = glmmnb,
+                                           verbose = verbose
                                        ))
             }
         }

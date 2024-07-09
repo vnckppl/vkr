@@ -12,6 +12,7 @@ batch_lmer_wrapper(
   reffect,
   covariates = NULL,
   numdec = 2,
+  glmmnb = FALSE,
   verbose = FALSE
 )
 }
@@ -27,6 +28,8 @@ batch_lmer_wrapper(
 \item{covariates}{Single covariate or array of covariates}
 
 \item{numdec}{Number of decimals for the beta and std statistics}
+
+\item{glmmnb}{Set to TRUE if you want to use a Negative Binomial GLMM}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }
