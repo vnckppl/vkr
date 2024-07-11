@@ -77,6 +77,11 @@ demogr <- function(idf, voi, group, mediqr = FALSE) {
             my_stdev <- aggregate(
                 idf[[voi]], list(idf[[group]]), FUN = sd, na.rm = TRUE
             )
+
+            # For the total sample
+            my_means_all <- mean(idf[[voi]])
+            my_stdev_all <- sd(idf[[voi]])
+
         # Calculate median and IQR
         } else if (mediqr == TRUE) {
             my_means <- aggregate(
@@ -85,10 +90,11 @@ demogr <- function(idf, voi, group, mediqr = FALSE) {
             my_stdev <- aggregate(
                 idf[[voi]], list(idf[[group]]), FUN = IQR, na.rm = TRUE
             )
-        }
 
-        my_means_all <- mean(idf[[voi]])
-        my_stdev_all <- sd(idf[[voi]])
+            # For the total sample
+            my_means_all <- median(idf[[voi]])
+            my_stdev_all <- IQR(idf[[voi]])
+        }
 
         ## *** Test for group differences
         model1 <- lm(idf[[voi]] ~ idf[[group]])
