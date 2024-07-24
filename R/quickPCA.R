@@ -138,8 +138,15 @@ quick_pca <- function(input_data, rotation, out_path, out_name) {
     ## can easily see how variables cluster.
     ## *** Automatically extract factors based on the loadings
     loadings <- c.PCA2$loadings[seq_len(length(names(input_data))), ]
+
+    ## *** If there is only one component, an array is returned.
+    # Convert this to a data frame
+    if (class(loadings) == "numeric") loadings <- as.data.frame(loadings)
+
     ## *** Create empty data frame for storing output
     loading_select <- loadings[, 1:sum(c.PCA2$values > 1)]
+    if (class(loading_select) == "numeric") loading_select <- loadings
+
     loading_select[] <- NA
     ## *** For each row find the column with the largest -absolute- value
     for (row in seq(1, nrow(loadings))) {
