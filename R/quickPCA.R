@@ -141,11 +141,11 @@ quick_pca <- function(input_data, rotation, out_path, out_name) {
 
     ## *** If there is only one component, an array is returned.
     # Convert this to a data frame
-    if (class(loadings) == "numeric") loadings <- as.data.frame(loadings)
+    if (class(loadings)[1] == "numeric") loadings <- as.data.frame(loadings)
 
     ## *** Create empty data frame for storing output
     loading_select <- loadings[, 1:sum(c.PCA2$values > 1)]
-    if (class(loading_select) == "numeric") loading_select <- loadings
+    if (class(loading_select)[1] == "numeric") loading_select <- loadings
 
     loading_select[] <- NA
     ## *** For each row find the column with the largest -absolute- value
