@@ -10,6 +10,7 @@
 #' @param predictors Predictor(s) to loop over
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
+#' @param numdecp Number of decimals for p-values
 #' @param np If set with two values (Ca and maxIter), the code will run lmp,
 #' from the lmPerm package, i.e., fitting and testing linear models with
 #' permutation tests. Ca=Stop iterations when estimated standard error of the
@@ -24,6 +25,7 @@ batch_lm_wrapper <-
              predictors,
              covariates = NULL,
              numdec = 2,
+             numdecp = 4,
              np = FALSE,
              verbose = FALSE
              ) {
@@ -44,6 +46,7 @@ batch_lm_wrapper <-
                                            pred,
                                            covariates,
                                            numdec,
+                                           numdecp,
                                            np,
                                            verbose
                                        ))

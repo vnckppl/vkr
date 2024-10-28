@@ -14,6 +14,7 @@
 #' @param predictor Predictor
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
+#' @param numdecp Number of decimals for p-values
 #' @param np If set with two values (Ca and maxIter), the code will run lmp,
 #' from the lmPerm package, i.e., fitting and testing linear models with
 #' permutation tests. Ca=Stop iterations when estimated standard error of the
@@ -29,6 +30,7 @@ batch_lm <- function(
                      predictor,
                      covariates = NULL,
                      numdec = 2,
+                     numdecp = 4,
                      np = FALSE,
                      verbose = FALSE
                      ) {
@@ -143,13 +145,13 @@ batch_lm <- function(
             ## ***** P-value
             if (npset != TRUE) {
                 gr_pvl <- formatC(round(
-                    my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
+                    my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = numdecp)
             } else {
                 ## gr_pvl <- formatC(round(
                 ##     as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"], 4),
                 ##     format = "f", digits = 4)
                 gr_pvl <- formatC(round(
-                    my_coeff[grp, "Pr(Prob)"], 4), format = "f", digits = 4)
+                    my_coeff[grp, "Pr(Prob)"], 4), format = "f", digits = numdecp)
             }
 
             ## *****  Store unrounded p-values for FDR correction
@@ -201,14 +203,14 @@ batch_lm <- function(
         if (npset != TRUE) {
             pr_pvl <- formatC(
                 round(my_coeff[predictor, "Pr(>|t|)"], 4),
-                format = "f", digits = 4)
+                format = "f", digits = numdecp)
         } else {
             ## pr_pvl <- formatC(round(
             ##     as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"], 4),
             ##     format = "f", digits = 4)
             pr_pvl <- formatC(
                 round(my_coeff[predictor, "Pr(Prob)"], 4),
-                format = "f", digits = 4)
+                format = "f", digits = numdecp)
         }
 
         ## *** Store unrounded p-values for FDR correction (done separately)

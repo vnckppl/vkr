@@ -10,6 +10,7 @@ batch_lm(
   predictor,
   covariates = NULL,
   numdec = 2,
+  numdecp = 4,
   np = FALSE,
   verbose = FALSE
 )
@@ -24,6 +25,8 @@ batch_lm(
 \item{covariates}{Single covariate or array of covariates}
 
 \item{numdec}{Number of decimals for the beta and std statistics}
+
+\item{numdecp}{Number of decimals for p-values}
 
 \item{np}{If set with two values (Ca and maxIter), the code will run lmp,
 from the lmPerm package, i.e., fitting and testing linear models with
