@@ -13,6 +13,7 @@ batch_lmer_wrapper(
   covariates = NULL,
   numdec = 2,
   glmmnb = FALSE,
+  fdr = TRUE,
   verbose = FALSE
 )
 }
@@ -30,6 +31,8 @@ batch_lmer_wrapper(
 \item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{glmmnb}{Set to TRUE if you want to use a Negative Binomial GLMM}
+
+\item{fdr}{Apply FDR correction (default = TRUE). Turn it off if you want to merge multiple tables later and apply FDR correction on the combined table.}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }

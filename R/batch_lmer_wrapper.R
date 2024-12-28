@@ -12,6 +12,7 @@
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
 #' @param glmmnb Set to TRUE if you want to use a Negative Binomial GLMM
+#' @param fdr Apply FDR correction (default = TRUE). Turn it off if you want to merge multiple tables later and apply FDR correction on the combined table.
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -24,6 +25,7 @@ batch_lmer_wrapper <-
              covariates = NULL,
              numdec = 2,
              glmmnb = FALSE,
+             fdr = TRUE,
              verbose = FALSE
              ) {
 
@@ -51,7 +53,7 @@ batch_lmer_wrapper <-
         }
 
         ## * Apply FDR correction
-        odf <- vkr::batch_lm_fdr(odf)
+        if (fdr == TRUE) odf <- vkr::batch_lm_fdr(odf)
 
         ## * Return data frame
         return(odf)
