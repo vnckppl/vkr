@@ -144,8 +144,8 @@ batch_lmer <- function(df,
                 gr_fdr <- my_coeff[grp, "Pr(>|t|)"]
             }
             gr_pr2 <- formatC(
-                round(my_esize$Rsq[my_esize$Effect == grp], 2),
-                format = "f", digits = 2
+                round(my_esize$Rsq[my_esize$Effect == grp], 3),
+                format = "f", digits = 3
             )
 
             ## **** Combine this information
