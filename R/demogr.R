@@ -12,9 +12,18 @@
 #' @param idf Input data frame
 #' @param voi Variable of interest
 #' @param group Group variable to stratify the variable of interest by
+#' @param numdec Number of decimals for mean/stdev  and mean/IQR variables
+#' @param numdecp Number of decimals for p-values
 #' @param mediqr If TRUE, then calculate median/IQR instead of mean/stdev
 #' @export
-demogr <- function(idf, voi, group, mediqr = FALSE) {
+demogr <- function(
+                   idf,
+                   voi,
+                   group,
+                   numdec = 2,
+                   numdecp = 4,
+                   mediqr = FALSE
+                   ) {
 
     ## ** Remove rows where group is NaN / NAs from the data frame
     n_old <- nrow(idf)
@@ -105,8 +114,8 @@ demogr <- function(idf, voi, group, mediqr = FALSE) {
         ## **** Information from 1st group in group variable (should be control)
         output_a <- rbind(
             voi,
-            round(my_means$x[my_means[1] == groups[1]], 1),
-            round(my_stdev$x[my_stdev[1] == groups[1]], 1)
+            round(my_means$x[my_means[1] == groups[1]], numdec),
+            round(my_stdev$x[my_stdev[1] == groups[1]], numdec)
         )
 
         ## **** Information from all other groups in group variable
@@ -115,19 +124,19 @@ demogr <- function(idf, voi, group, mediqr = FALSE) {
         for (gr in seq(2, length(groups))) {
             output_b <- rbind(
                 output_b,
-                round(my_means$x[my_means[1] == groups[[gr]]], 1),
-                round(my_stdev$x[my_stdev[1] == groups[[gr]]], 1),
+                round(my_means$x[my_means[1] == groups[[gr]]], numdec),
+                round(my_stdev$x[my_stdev[1] == groups[[gr]]], numdec),
                 round(summary(model1)$coefficients[
                                           paste0("idf[[group]]", groups[[gr]]),
                                           "Pr(>|t|)"
-                                      ], 3)
+                                      ], numdecp)
             )
         }
 
         ## **** Information for the total sample
         output_c <- rbind(
-            round(my_means_all, 1),
-            round(my_stdev_all, 1),
+            round(my_means_all, numdec),
+            round(my_stdev_all, numdec),
             n_new2
         )
 
@@ -186,7 +195,7 @@ demogr <- function(idf, voi, group, mediqr = FALSE) {
             ## ***** Only do a Chi^2 test if there are at least 2 levels present
             grx_pval <- tryCatch(exp = {
                 grx_c <- chisq.test(gr_subset[[group]], gr_subset[[voi]])
-                grx_pval <- round(grx_c$p.value, 3)
+                grx_pval <- round(grx_c$p.value, numdecp)
             },
             error = function(e) {
                 return("NA")
@@ -224,7 +233,7 @@ demogr <- function(idf, voi, group, mediqr = FALSE) {
         ## ***** Only do a Chi^2 test if there are at least 2 levels present
         all_pval <- tryCatch(exp = {
             all_cs <- chisq.test(idf[[group]], idf[[voi]])
-            all_pval <- round(all_cs$p.value, 3)
+            all_pval <- round(all_cs$p.value, numdecp)
         },
         error = function(e) {
             return("NA")

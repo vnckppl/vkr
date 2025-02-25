@@ -4,7 +4,7 @@
 \alias{demogr_wrapper}
 \title{Run demogr on a set of variables and return a single output data frame}
 \usage{
-demogr_wrapper(idf, vois, group, mediqr = FALSE)
+demogr_wrapper(idf, vois, group, numdec = 2, numdecp = 4, mediqr = FALSE)
 }
 \arguments{
 \item{idf}{Input data frame}
@@ -12,6 +12,10 @@ demogr_wrapper(idf, vois, group, mediqr = FALSE)
 \item{vois}{Outcome measure(s) to loop over}
 
 \item{group}{Group variable to stratify the variable of interest by}
+
+\item{numdec}{Number of decimals for mean/stdev  and mean/IQR variables}
+
+\item{numdecp}{Number of decimals for p-values}
 
 \item{mediqr}{If TRUE, then calculate median/IQR instead of mean/stdev}
 }

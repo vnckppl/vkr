@@ -4,7 +4,7 @@
 \alias{demogr}
 \title{Print demograhics for a variable by group}
 \usage{
-demogr(idf, voi, group, mediqr = FALSE)
+demogr(idf, voi, group, numdec = 2, numdecp = 4, mediqr = FALSE)
 }
 \arguments{
 \item{idf}{Input data frame}
@@ -12,6 +12,10 @@ demogr(idf, voi, group, mediqr = FALSE)
 \item{voi}{Variable of interest}
 
 \item{group}{Group variable to stratify the variable of interest by}
+
+\item{numdec}{Number of decimals for mean/stdev  and mean/IQR variables}
+
+\item{numdecp}{Number of decimals for p-values}
 
 \item{mediqr}{If TRUE, then calculate median/IQR instead of mean/stdev}
 }
