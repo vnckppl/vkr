@@ -9,42 +9,45 @@ convert_esize(my_e, my_t)
 \arguments{
 \item{Value}{of an effect size}
 
-\item{Type}{of effect size (h, f, d)}
+\item{Type}{of effect size (h, f, d, OR, pr)}
 }
 \description{
 This function converts between the following effect sizes:
-Cohen's d, Cohen's f, and Eta-squared
+Cohen's d, Cohen's f, Eta-squared, and OR
 The formulas that are used are from:
-Cohen J., Statistical Power Analysis for the Behavioral
+\itemize{
+\item Cohen J., Statistical Power Analysis for the Behavioral
 Sciences 2nd Ed (1988)
+\item Sánchez-Meca, Effect-Size Indices for Dichotomized Outcomes in
+Meta-Analysis (2003)
+\item Mathur, A Simple Interpretable Conversion from Pearson's Correlation to
+Cohen's for d Continuous Exposures (2020)
+}
 }
 \details{
 \enumerate{
 \item Cohen's f to Cohen's d
+Cohen 1988: Page 276
 d = 2f
-(Page 276)
 \item Cohen's f to eta-squared
+Cohen 1988: Page 281
 eta-squared = f^2 / (1 + f^2)
-(Page 281)
+\item OR to Cohen's d
+Sánchez-Meca 2003: Formula 14
+Cohen's d = log(OR) * (sqrt(3) / pi)
+\item Pearson's r to Cohen's d
+Mathur 2020
+d = 2 * r / sqrt(1 - r^2)
 }
 
 Interpretation of the effec sizes is as follows:
 (https://en.wikipedia.org/wiki/Effect_size)
 (http://core.ecu.edu/psyc/wuenschk/docs30/EffectSizeConventions.pdf)
-(https://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/effectSize)
-
-Cohen's d:
-small: 0.2
-medium: 0.5
-large: 0.8
-
-Cohen's f:
-small: 0.10
-medium: 0.25
-large: 0.40
-
-eta-squared:
-small: 0.01
-medium: 0.06
-large: 0.14
+(https://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/effectSize)\tabular{llll}{
+   Measure \tab Small \tab Medium \tab Large \cr
+   Cohen's d \tab 0.2 \tab 0.5 \tab 0.8 \cr
+   Cohen's f \tab 0.1 \tab 0.25 \tab 0.4 \cr
+   eta^2 \tab 0.01 \tab 0.06 \tab 0.14 \cr
+   Odds Ratio \tab  \tab  \tab  \cr
+}
 }
