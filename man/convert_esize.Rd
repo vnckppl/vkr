@@ -43,11 +43,13 @@ d = 2 * r / sqrt(1 - r^2)
 Interpretation of the effec sizes is as follows:
 (https://en.wikipedia.org/wiki/Effect_size)
 (http://core.ecu.edu/psyc/wuenschk/docs30/EffectSizeConventions.pdf)
-(https://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/effectSize)\tabular{llll}{
+(https://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/effectSize)
+Cohen, 1988, page 79-80\tabular{llll}{
    Measure \tab Small \tab Medium \tab Large \cr
    Cohen's d \tab 0.2 \tab 0.5 \tab 0.8 \cr
    Cohen's f \tab 0.1 \tab 0.25 \tab 0.4 \cr
    eta^2 \tab 0.01 \tab 0.06 \tab 0.14 \cr
-   Odds Ratio \tab  \tab  \tab  \cr
+   Odds Ratio \tab 1.44 \tab 2.48 \tab 4.27 \cr
+   Pearson r \tab 0.10 \tab 0.30 \tab 0.50 \cr
 }
 }

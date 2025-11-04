@@ -31,13 +31,15 @@
 #' (https://en.wikipedia.org/wiki/Effect_size)
 #' (http://core.ecu.edu/psyc/wuenschk/docs30/EffectSizeConventions.pdf)
 #' (https://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/effectSize)
+#' Cohen, 1988, page 79-80
 #'
 #' | Measure    | Small | Medium | Large |
 #' |------------|-------|--------|-------|
 #' | Cohen's d  | 0.2   | 0.5    | 0.8   |
 #' | Cohen's f  | 0.1   | 0.25   | 0.4   |
 #' | eta^2      | 0.01  | 0.06   | 0.14  |
-#' | Odds Ratio |       |        |       |
+#' | Odds Ratio | 1.44  | 2.48   | 4.27  |
+#' | Pearson r  | 0.10  | 0.30   | 0.50  |
 #'
 #' @param Value of an effect size
 #' @param Type of effect size (h, f, d, OR, pr)
@@ -215,13 +217,13 @@ convert_esize <- function(my_e, my_t) {
     if (odf$EffectSize[5] < .10) {
         odf$Interpretation[5] <- "< small"
     }
-    if (odf$EffectSize[5] >= .10 & odf$EffectSize[5] < .20) {
+    if (odf$EffectSize[5] >= .10 & odf$EffectSize[5] < .30) {
         odf$Interpretation[5] <- "small"
     }
-    if (odf$EffectSize[5] >= .20 & odf$EffectSize[5] < .30) {
+    if (odf$EffectSize[5] >= .30 & odf$EffectSize[5] < .50) {
         odf$Interpretation[5] <- "medium"
     }
-    if (odf$EffectSize[5] >= .30) {
+    if (odf$EffectSize[5] >= .50) {
         odf$Interpretation[5] <- "large"
     }
 
