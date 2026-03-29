@@ -4,20 +4,35 @@
 \alias{df2orgtable}
 \title{Convert a data frame to an org table and print it}
 \usage{
-df2orgtable(df, colorizep = FALSE, thold = 0.05, rownames = FALSE)
+df2orgtable(
+  df,
+  colorizep = TRUE,
+  thold = 0.05,
+  rownamesout = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{df}{Name of a data element in your working environment}
 
-\item{colorizep}{When set to 'auto', it will find columns ending in 'p' or
-'fdr' and color the values smaller than the threshold}
+\item{colorizep}{When set to TRUE, automatically color columns ending in 'p'
+and 'fdr' according the the threshold. If set to a list with one or two
+arrays, the first array will be used as the p-value columns and the second
+array will be used as fdr p-value columns.}
 
 \item{thold}{Threshold for coloring}
 
-\item{rownames}{If set to TRUE, print rownames in output table. If set to
+\item{rownamesout}{If set to TRUE, print rownames in output table. If set to
 a string, use this as the header of the rownames column and include it in the
 output}
+
+\item{verbose}{Show messages}
 }
 \description{
 Convert a data frame to an org table and print it
+}
+\examples{
+df2orgtable(df,
+            colorizep = list(c("col1", "col2"), c("col3", "col4")),
+            thold = 0.05)
 }
