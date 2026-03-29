@@ -7,7 +7,7 @@
 cropplot(figfile)
 }
 \arguments{
-\item{figgile}{The pdf file you want to crop.}
+\item{figfile}{The pdf file you want to crop.}
 }
 \description{
 This function removes all white space around a pdf figure. The input file
