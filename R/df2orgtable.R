@@ -9,6 +9,8 @@
 #' @param rownamesout If set to TRUE, print rownames in output table. If set to
 #' a string, use this as the header of the rownames column and include it in the
 #' output
+#' @param noNAs Print cells with NA as empty
+#' @param nozeros Print cells with 0 as empty
 #' @param verbose Show messages
 #' @examples
 #' df2orgtable(df,
@@ -20,6 +22,8 @@ df2orgtable <- function(
                         colorizep = TRUE,
                         thold = 0.05,
                         rownamesout = FALSE,
+                        noNAs = TRUE,
+                        nozeros = FALSE,
                         verbose = FALSE
                         ) {
 
@@ -28,6 +32,8 @@ df2orgtable <- function(
     if (isTRUE(colorizep)) {
         ## *** Find columns ending in 'p'
         pcols <- colnames(df)[grep("p$", colnames(df))]
+    } else if (isFALSE(colorizep)) {
+        pcols <- NULL
     } else if (is.list(colorizep)) {
         ## *** Select p columns from user input
         pcols <- colorizep[[1]]
@@ -74,6 +80,9 @@ df2orgtable <- function(
     if (isTRUE(colorizep)) {
         ## *** Find columns ending in 'fdr'
         fdrcols <- colnames(df)[grep("fdr$", colnames(df))]
+    } else if (isFALSE(colorizep)) {
+        ## *** Skip FDR coloring
+        fdrcols <- NULL
     } else if (is.list(colorizep)) {
         ## *** Select p columns from user input
         fdrcols <- colorizep[[2]]
@@ -112,6 +121,26 @@ df2orgtable <- function(
     my_body <- apply(df[, names(df)], 1, paste, collapse = "|") |>
         gsub("^", "|", x = _) |>
         gsub("$", "|", x = _)
+
+    ## * Remove cells containing only NA
+    if (isTRUE(noNAs)) {
+        my_body <- gsub(
+            "(?<=\\|)[ \t]*NA[ \t]*(?=\\|)",
+            "",
+            my_body,
+            perl = TRUE
+        )
+    }
+
+    ## * Remove cells containing only 0
+    if (isTRUE(nozeros)) {
+        my_body <- gsub(
+            "(?<=\\|)[ \t]*0[ \t]*(?=\\|)",
+            "",
+            my_body,
+            perl = TRUE
+        )
+    }
 
     ## * Combine data
     my_out <- c(my_hdr, "|-", my_body)

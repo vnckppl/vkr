@@ -9,6 +9,8 @@ df2orgtable(
   colorizep = TRUE,
   thold = 0.05,
   rownamesout = FALSE,
+  noNAs = TRUE,
+  nozeros = FALSE,
   verbose = FALSE
 )
 }
@@ -25,6 +27,10 @@ array will be used as fdr p-value columns.}
 \item{rownamesout}{If set to TRUE, print rownames in output table. If set to
 a string, use this as the header of the rownames column and include it in the
 output}
+
+\item{noNAs}{Print cells with NA as empty}
+
+\item{nozeros}{Print cells with 0 as empty}
 
 \item{verbose}{Show messages}
 }
