@@ -12,6 +12,7 @@
 #' @param noNAs Print cells with NA as empty
 #' @param nozeros Print cells with 0 as empty
 #' @param verbose Show messages
+#' @param csv Print csv instead
 #' @examples
 #' df2orgtable(df,
 #'             colorizep = list(c("col1", "col2"), c("col3", "col4")),
@@ -24,7 +25,8 @@ df2orgtable <- function(
                         rownamesout = FALSE,
                         noNAs = TRUE,
                         nozeros = FALSE,
-                        verbose = FALSE
+                        verbose = FALSE,
+                        csv = FALSE
                         ) {
 
     ## * Colorize p-values
@@ -143,9 +145,17 @@ df2orgtable <- function(
     }
 
     ## * Combine data
-    my_out <- c(my_hdr, "|-", my_body)
-
-    ## * Print
-    cat(my_out, sep = "\n")
-
+    ## ** Print csv
+    if (isTRUE(csv)) {
+        cat("#+begin_src csv\n")
+        cat(c(
+            gsub(",$", "", gsub("^,", "", gsub("\\|", ",", my_hdr))),
+            gsub(",$", "", gsub("^,", "", gsub("\\|", ",", my_body)))
+        ), sep = "\n")
+        cat("#+end_src\n")
+    } else if (isFALSE(csv)) {
+    ## ** Print org table
+        my_out <- c(my_hdr, "|-", my_body)
+        cat(my_out, sep = "\n")
+    }
 }

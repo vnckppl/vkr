@@ -11,7 +11,8 @@ df2orgtable(
   rownamesout = FALSE,
   noNAs = TRUE,
   nozeros = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  csv = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ output}
 \item{nozeros}{Print cells with 0 as empty}
 
 \item{verbose}{Show messages}
+
+\item{csv}{Print csv instead}
 }
 \description{
 Convert a data frame to an org table and print it
