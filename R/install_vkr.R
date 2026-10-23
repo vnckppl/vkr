@@ -5,6 +5,7 @@ install_vkr <- function() {
 
     ## * Set working directory
     setwd("/datadisk/Utah/Kladblok/20171214_R/MyPackage/vkr")
+    remove.packages("vkr")
 
     ## * Unload previous version of vkr
     unloadNamespace("vkr")
