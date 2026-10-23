@@ -21,6 +21,7 @@
 #' estimated p is less than Ca*p. maxIter=The maximum number of iterations.
 #' Note that this is a random permutation method, but the seed has been
 #' explicitely set to 357 so that results will be replicable.
+#' @param plot Generate plots and store in the output folder
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
 
@@ -32,6 +33,7 @@ batch_lm <- function(
                      numdec = 2,
                      numdecp = 4,
                      np = FALSE,
+                     plot = FALSE,
                      verbose = FALSE
                      ) {
 
@@ -49,6 +51,7 @@ batch_lm <- function(
     }
 
     ## ** Collapse covariates for linear model
+    covariates_bkp <- covariates
     covariates <- paste(covariates, collapse = " + ")
 
     ## ** Remove rows where there the predictor or outcome measure are NA
@@ -99,6 +102,19 @@ batch_lm <- function(
                                 maxIter = lmp_maxiter)
     }
     if (verbose) print(summary(my_model))
+
+    ## ** Plot the scatter + regression line plots
+    ## if (!isFALSE(plot)) {
+    ##     vkr::batch_lm_plot(
+    ##         df = df,
+    ##         outcome = outcome,
+    ##         covariates = covariates_bkp,
+    ##         predictor = predictor,
+    ##         output_dir = plot,
+    ##         width_cm = 30,
+    ##         height_cm = 15
+    ##     )
+    ## }
 
     ## ** Calculate effect sizes
     my_esize <- lsr::etaSquared(my_model)

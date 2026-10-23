@@ -13,6 +13,7 @@ batch_lm_wrapper(
   numdec = 2,
   numdecp = 4,
   np = FALSE,
+  plot = FALSE,
   verbose = FALSE
 )
 }
@@ -33,6 +34,8 @@ batch_lm_wrapper(
 from the lmPerm package, i.e., fitting and testing linear models with
 permutation tests. Ca=Stop iterations when estimated standard error of the
 estimated p is less than Ca*p. maxIter=The maximum number of iterations.}
+
+\item{plot}{Generate plots and store in the output folder}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }

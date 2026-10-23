@@ -12,6 +12,7 @@ batch_lm(
   numdec = 2,
   numdecp = 4,
   np = FALSE,
+  plot = FALSE,
   verbose = FALSE
 )
 }
@@ -34,6 +35,8 @@ permutation tests. Ca=Stop iterations when estimated standard error of the
 estimated p is less than Ca*p. maxIter=The maximum number of iterations.
 Note that this is a random permutation method, but the seed has been
 explicitely set to 357 so that results will be replicable.}
+
+\item{plot}{Generate plots and store in the output folder}
 
 \item{verbose}{Set to TRUE if you want to see the full lm output}
 }
