@@ -10,8 +10,9 @@
 #' @param df Input data frame
 #' @param inputs List of input variables that are being processed
 #' @param transform If TRUE, apply log transformation
-#' @param truncsd If set to a value, truncate the log transformed data to mean
-#' +/- truncsd
+#' @param truncsd If set to a numeric value, truncate the log transformed data
+#' to mean +/- truncsd. FALSE/NULL means no truncation of the saved variable
+#' (plots then use 2.5 SD for the "Log + Trunc" curve).
 #' @param plotdir If set to a path, it will output the normality plots there
 #' @param verbose If TRUE, display verbose output
 #' @export
@@ -56,7 +57,7 @@ normalize <-
         }
 
         ## * Plot an overview figure with the skewness for all variables
-        if (grepl("character", class(plotdir))) {
+        if (is.character(plotdir)) {
 
             ## ** Create plot output folder
             if (!dir.exists(plotdir)) {
@@ -114,6 +115,13 @@ normalize <-
 
             ## ** Return new data frame
             return(tmpdf)
+        }
+
+        ## * [function] Density of finite values only (NULL if not possible)
+        safe_density <- function(x) {
+            x <- x[is.finite(x)]
+            if (length(x) < 2L || sd(x) == 0) return(NULL)
+            density(x)
         }
 
         ## * Log transform data
@@ -175,7 +183,7 @@ normalize <-
             if (transform == TRUE) {
 
                 ## *** If requested, also apply truncation
-                if (grepl("numeric", class(truncsd))) {
+                if (is.numeric(truncsd)) {
 
                     # Log transform and then remove outliers
                     df[[newvar]] <- log(tmp) |>
@@ -190,55 +198,62 @@ normalize <-
 
             ## ** Create density curves of the data for inspection
             # Test if plotdir was set (if we want plots)
-            if (grepl("character", class(plotdir))) {
+            if (is.character(plotdir)) {
+
+                ## *** Threshold for the "Log + Trunc" curve in the figure
+                # Fall back to 2.5 SD whenever no numeric threshold was given
+                # (FALSE would otherwise be coerced to 0, collapsing all values
+                # to the mean and producing NaN in ztrans())
+                if (is.numeric(truncsd)) {
+                    truncsdfig <- truncsd
+                } else {
+                    truncsdfig <- 2.5
+                }
 
                 ## *** Calculate density curve data
                 ## **** Raw data
-                mydensity_rd <- density(ztrans(df[[var]]), na.rm = TRUE)
-                maxy_rd <- max(mydensity_rd$y)
-                maxx_rd <- max(mydensity_rd$x)
-                minx_rd <- min(mydensity_rd$x)
+                mydensity_rd <- safe_density(ztrans(df[[var]]))
 
                 ## **** Square root transformation
-                mydensity_sr <- density(ztrans(sqrt(df[[var]])), na.rm = TRUE)
-                maxy_sr <- max(mydensity_sr$y)
-                maxx_sr <- max(mydensity_sr$x)
-                minx_sr <- min(mydensity_sr$x)
+                mydensity_sr <- safe_density(ztrans(sqrt(df[[var]])))
 
                 ## **** Arc-sine transformation
                 ## (values have to be between 0-1)
                 maxvar <- max(abs(sqrt(df[[var]])), na.rm = TRUE)
-                mydensity_as <- density(
-                    ztrans(asin(sqrt(df[[var]]) / maxvar)), na.rm = TRUE
+                mydensity_as <- safe_density(
+                    ztrans(asin(sqrt(df[[var]]) / maxvar))
                 )
-                maxy_as <- max(mydensity_as$y)
-                maxx_as <- max(mydensity_as$x)
-                minx_as <- min(mydensity_as$x)
 
                 ## **** Log transformation
-                mydensity_lo <- density(ztrans(log(tmp)), na.rm = TRUE)
-                maxy_lo <- max(mydensity_lo$y)
-                maxx_lo <- max(mydensity_lo$x)
-                minx_lo <- min(mydensity_lo$x)
+                mydensity_lo <- safe_density(ztrans(log(tmp)))
 
                 ## **** Log transformation with truncation
-                if (is.null(truncsd)) {
-                    truncsdfig <- 2.5
-                } else {
-                    truncsdfig <- truncsd
-                }
                 mydensity_lt <- log(tmp) |>
                     resetoutl(tmpdf = _, sdthreshold = truncsdfig) |>
                     ztrans(data = _) |>
-                    density(x = _, na.rm = TRUE)
-                maxy_lt <- max(mydensity_lo$y)
-                maxx_lt <- max(mydensity_lo$x)
-                minx_lt <- min(mydensity_lo$x)
+                    safe_density()
 
-                ## *** Calculate max maximum for all distributions
-                maxy4fig <- max(maxy_rd, maxy_sr, maxy_as, maxy_lo, maxy_lt)
-                maxx4fig <- max(maxx_rd, maxx_sr, maxx_as, maxx_lo, maxx_lt)
-                minx4fig <- min(minx_rd, minx_sr, minx_as, minx_lo, minx_lt)
+                ## *** Skip the figure if any curve could not be computed
+                dens <- list(
+                    Raw = mydensity_rd, Sqrt = mydensity_sr,
+                    Arcsine = mydensity_as, Log = mydensity_lo,
+                    `Log + Trunc` = mydensity_lt
+                )
+                failed <- names(dens)[vapply(dens, is.null, logical(1))]
+                if (length(failed) > 0) {
+                    warning(
+                        "Skipping density plot for '", var,
+                        "': no valid density for: ",
+                        paste(failed, collapse = ", ")
+                    )
+                    next
+                }
+
+                ## *** Extremes for all distributions
+                maxy4fig <- max(vapply(dens, function(d) max(d$y), numeric(1)))
+                maxx4fig <- max(vapply(dens, function(d) max(d$x), numeric(1)))
+                minx4fig <- min(vapply(dens, function(d) min(d$x), numeric(1)))
+                xpad <- 0.02 * (maxx4fig - minx4fig)
 
                 ## *** Create plots
                 figfile <- file.path(plotdir, paste0("density_", var, ".pdf"))
@@ -255,7 +270,7 @@ normalize <-
                 plot(
                     mydensity_rd,
                     ylim = c(0, 1.02 * maxy4fig),
-                    xlim = c(0.98 * minx4fig, 1.02 * maxx4fig),
+                    xlim = c(minx4fig - xpad, maxx4fig + xpad),
                     main = plottitle
                 )
 
@@ -265,10 +280,10 @@ normalize <-
                 ## **** Arc-sine transformation
                 lines(mydensity_as, col = "blue")
 
-                ## **** Log transformation (lwd = 3)
+                ## **** Log transformation
                 lines(mydensity_lo, col = "red")
 
-                ## **** Log transformation
+                ## **** Log transformation with truncation
                 lines(mydensity_lt, col = "pink")
 
                 ## *** Add legend

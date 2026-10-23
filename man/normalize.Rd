@@ -20,8 +20,9 @@ normalize(
 
 \item{transform}{If TRUE, apply log transformation}
 
-\item{truncsd}{If set to a value, truncate the log transformed data to mean
-+/- truncsd}
+\item{truncsd}{If set to a numeric value, truncate the log transformed data
+to mean +/- truncsd. FALSE/NULL means no truncation of the saved variable
+(plots then use 2.5 SD for the "Log + Trunc" curve).}
 
 \item{plotdir}{If set to a path, it will output the normality plots there}
 
