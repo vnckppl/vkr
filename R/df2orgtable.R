@@ -47,16 +47,18 @@ df2orgtable <- function(
 
         ## **** Put information into variables
         pcol <- pcols[npcol]   # Column name
+        pvalues <- df[[pcol]]
+        pnum <- suppressWarnings(as.numeric(trimws(as.character(pvalues))))
+        sig <- !is.na(pnum) & pnum < thold
 
         ## **** Define org-mode prefix and postfix color syntax
         prefix <- paste0("¡to", npcol, "¡")
         postfix <- paste0("¡/to", npcol, "¡")
 
         ## **** Apply the coloring to the columns
-        # Color when p < threshold and when p is not NA
-        df[[pcol]][df[[pcol]] < thold & !is.na(df[[pcol]])] <-
-            paste0(prefix, df[[pcol]][df[[pcol]] <
-                                      thold & !is.na(df[[pcol]])], postfix)
+        # Color when p < threshold and when p is not NA or empty
+        df[[pcol]][sig] <-
+            paste0(prefix, pvalues[sig], postfix)
 
         ## **** Also colorize the first two columns
         # Colorize the first two columns if the pvalue for that row is
@@ -64,18 +66,20 @@ df2orgtable <- function(
         # not color the same variable twice, because mutiple p-values on
         # the row are surpassing the threshold).
         ## ***** Outcome measure
-        df[[1]][!is.na(df[[pcol]]) & df[[pcol]] < thold & !grepl("¡", df[[1]])] <-
+        df[[1]][sig & !grepl("¡", df[[1]])] <-
             paste0(
                 "¡ty1¡",
-                df[[1]][!is.na(df[[pcol]]) & df[[pcol]] < thold & !grepl("¡", df[[1]])],
-                "¡/ty1¡")
+                df[[1]][sig & !grepl("¡", df[[1]])],
+                "¡/ty1¡"
+            )
 
         ## ***** Predictor
-        df[[2]][!is.na(df[[pcol]]) & df[[pcol]] < thold & !grepl("¡", df[[2]])] <-
+        df[[2]][sig & !grepl("¡", df[[2]])] <-
             paste0(
                 "¡ty2¡",
-                df[[2]][!is.na(df[[pcol]]) & df[[pcol]] < thold & !grepl("¡", df[[2]])],
-                "¡/ty2¡")
+                df[[2]][sig & !grepl("¡", df[[2]])],
+                "¡/ty2¡"
+            )
     }
 
     ## ** FDR corrected p-values
@@ -96,16 +100,18 @@ df2orgtable <- function(
 
         ## **** Put information into variables
         fdrcol <- fdrcols[nfdrcol] # Column name
+        fdrvalues <- df[[fdrcol]]
+        fdrnum <- suppressWarnings(as.numeric(trimws(as.character(fdrvalues))))
+        sig <- !is.na(fdrnum) & fdrnum < thold
 
         ## **** Define org-mode prefix and postfix color syntax
         prefix <- paste0("¡tr", nfdrcol, "¡")
         postfix <- paste0("¡/tr", nfdrcol, "¡")
 
         ## **** Apply the coloring to the columns
-        # Color when FDR p < threshold and when FDR p is not NA
-        df[[fdrcol]][df[[fdrcol]] < thold & !is.na(df[[fdrcol]])] <-
-            paste0(prefix, df[[fdrcol]][df[[fdrcol]] <
-                                        thold & !is.na(df[[fdrcol]])], postfix)
+        # Color when FDR p < threshold and when FDR p is not NA or empty
+        df[[fdrcol]][sig] <-
+            paste0(prefix, fdrvalues[sig], postfix)
     }
 
     ## * Include rownames column if requested
@@ -154,7 +160,7 @@ df2orgtable <- function(
         ), sep = "\n")
         cat("#+end_src\n")
     } else if (isFALSE(csv)) {
-    ## ** Print org table
+        ## ** Print org table
         my_out <- c(my_hdr, "|-", my_body)
         cat(my_out, sep = "\n")
     }
