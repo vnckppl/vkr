@@ -14,6 +14,6 @@ install_vkr <- function() {
     devtools::document()
 
     ## * Install the package
-    devtools::install(upgrade = "never")
+    devtools::install(upgrade = FALSE)
 
 }
