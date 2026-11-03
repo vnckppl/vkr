@@ -104,17 +104,17 @@ batch_lm <- function(
     if (verbose) print(summary(my_model))
 
     ## ** Plot the scatter + regression line plots
-    ## if (!isFALSE(plot)) {
-    ##     vkr::batch_lm_plot(
-    ##         df = df,
-    ##         outcome = outcome,
-    ##         covariates = covariates_bkp,
-    ##         predictor = predictor,
-    ##         output_dir = plot,
-    ##         width_cm = 30,
-    ##         height_cm = 15
-    ##     )
-    ## }
+    if (!isFALSE(plot)) {
+        vkr::batch_lm_plot(
+            df = df,
+            outcome = outcome,
+            covariates = covariates_bkp,
+            predictor = predictor,
+            output_dir = plot,
+            width_cm = 30,
+            height_cm = 15
+        )
+    }
 
     ## ** Calculate effect sizes
     my_esize <- lsr::etaSquared(my_model)
