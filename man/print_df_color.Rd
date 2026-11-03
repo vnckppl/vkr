@@ -20,12 +20,12 @@ print_df_color(df, gap = 2L, ...)
 }
 \description{
 Prints a data frame to the console using ANSI escape codes: the header line
-is bold yellow, odd data rows are left untouched (default terminal colour),
+is bold yellow, odd data rows are left untouched (default terminal color),
 and even data rows are cyan. Output is captured from \code{print()} so
 alignment and numeric formatting match the standard data frame display.
 }
 \examples{
-print_striped(head(mtcars, 10))
-print_striped(head(mtcars, 10), gap = 3)
-print_striped(iris[1:8, ], digits = 3)
+print_df_color(head(mtcars, 10))
+print_df_color(head(mtcars, 10), gap = 3)
+print_df_color(iris[1:8, ], digits = 3)
 }
