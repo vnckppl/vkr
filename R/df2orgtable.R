@@ -153,15 +153,15 @@ df2orgtable <- function(
     ## * Combine data
     ## ** Print csv
     if (isTRUE(csv)) {
-        cat("#+begin_src csv\n")
-        cat(c(
+        writeLines("#+begin_src csv\n")
+        writeLines(c(
             gsub(",$", "", gsub("^,", "", gsub("\\|", ",", my_hdr))),
             gsub(",$", "", gsub("^,", "", gsub("\\|", ",", my_body)))
         ), sep = "\n")
-        cat("#+end_src\n")
+        writeLines("#+end_src\n")
     } else if (isFALSE(csv)) {
         ## ** Print org table
         my_out <- c(my_hdr, "|-", my_body)
-        cat(my_out, sep = "\n")
+        writeLines(my_out, sep = "\n")
     }
 }

@@ -15,6 +15,6 @@ horg <- function(my_text,
     mynewlines <- paste0(rep("\n", numn), collapse = "")
 
     ## * Build the string and display
-    cat(paste0("¡", hlstyle, "¡", my_text, "¡/", hlstyle, "¡", mynewlines))
+    writeLines(paste0("¡", hlstyle, "¡", my_text, "¡/", hlstyle, "¡", mynewlines))
 
 }
