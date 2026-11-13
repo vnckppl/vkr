@@ -11,6 +11,7 @@ batch_lm(
   covariates = NULL,
   numdec = 2,
   numdecp = 4,
+  numdech = 2,
   np = FALSE,
   plot = FALSE,
   verbose = FALSE
@@ -28,6 +29,8 @@ batch_lm(
 \item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{numdecp}{Number of decimals for p-values}
+
+\item{numdech}{Number of decimals for eta-squared}
 
 \item{np}{If set with two values (Ca and maxIter), the code will run lmp,
 from the lmPerm package, i.e., fitting and testing linear models with

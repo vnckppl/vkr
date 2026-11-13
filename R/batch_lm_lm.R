@@ -15,6 +15,7 @@
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
 #' @param numdecp Number of decimals for p-values
+#' @param numdech Number of decimals for eta-squared
 #' @param np If set with two values (Ca and maxIter), the code will run lmp,
 #' from the lmPerm package, i.e., fitting and testing linear models with
 #' permutation tests. Ca=Stop iterations when estimated standard error of the
@@ -32,6 +33,7 @@ batch_lm <- function(
                      covariates = NULL,
                      numdec = 2,
                      numdecp = 4,
+                     numdech = 2,
                      np = FALSE,
                      plot = FALSE,
                      verbose = FALSE
@@ -239,7 +241,8 @@ batch_lm <- function(
 
         ## *** Eta-squared
         pr_eta <- formatC(
-            round(my_esize[predictor, "eta.sq"], 2), format = "f", digits = 2)
+            round(my_esize[predictor, "eta.sq"], numdech),
+            format = "f", digits = numdech)
 
         ## *** Combine this information
         odf <- rbind(pr_est, pr_std, pr_pvl, pr_fdr, pr_eta, my_n_to)
