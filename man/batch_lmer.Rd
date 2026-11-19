@@ -11,6 +11,8 @@ batch_lmer(
   reffect,
   covariates = NULL,
   numdec = 2,
+  numdecp = 4,
+  numdecr = 2,
   glmmnb = FALSE,
   verbose = FALSE
 )
@@ -27,6 +29,10 @@ batch_lmer(
 \item{covariates}{Single covariate or array of covariates}
 
 \item{numdec}{Number of decimals for the beta and std statistics}
+
+\item{numdecp}{Number of decimals for p-values}
+
+\item{numdecr}{Number of decimals for partial-R^2}
 
 \item{glmmnb}{Set to TRUE if you want to use a Negative Binomial GLMM}
 

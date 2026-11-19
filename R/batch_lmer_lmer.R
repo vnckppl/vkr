@@ -20,6 +20,8 @@
 #' @param reffect Random Effect variable
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
+#' @param numdecp Number of decimals for p-values
+#' @param numdecr Number of decimals for partial-R^2
 #' @param glmmnb Set to TRUE if you want to use a Negative Binomial GLMM
 #' @param verbose Set to TRUE if you want to see the full lm output
 #' @export
@@ -30,6 +32,8 @@ batch_lmer <- function(df,
                        reffect,
                        covariates = NULL,
                        numdec = 2,
+                       numdecp = 4,
+                       numdecr = 2,
                        glmmnb = FALSE,
                        verbose = FALSE
                        ) {
@@ -133,19 +137,19 @@ batch_lmer <- function(df,
             # For Negative Binomial Models
             if (glmmnb == TRUE) {
                 gr_pvl <- formatC(
-                    round(my_coeff[grp, "Pr(>|z|)"], 4), format = "f", digits = 4)
+                    round(my_coeff[grp, "Pr(>|z|)"], numdecp), format = "f", digits = numdecp)
                 # Store unrounded p-values for FDR correction (done separately)
                 gr_fdr <- my_coeff[grp, "Pr(>|z|)"]
             # For other (linear) models
             } else if (glmmnb == FALSE) {
                 gr_pvl <- formatC(
-                    round(my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = 4)
+                    round(my_coeff[grp, "Pr(>|t|)"], numdecp), format = "f", digits = numdecp)
                 # Store unrounded p-values for FDR correction (done separately)
                 gr_fdr <- my_coeff[grp, "Pr(>|t|)"]
             }
             gr_pr2 <- formatC(
-                round(my_esize$Rsq[my_esize$Effect == grp], 3),
-                format = "f", digits = 3
+                round(my_esize$Rsq[my_esize$Effect == grp], numdecr),
+                format = "f", digits = numdecr
             )
 
             ## **** Combine this information
@@ -176,19 +180,19 @@ batch_lmer <- function(df,
         # For Negative Binomial Models
         if (glmmnb == TRUE) {
             pr_pvl <- formatC(
-                round(my_coeff[predictor, "Pr(>|z|)"], 4), format = "f", digits = 4)
+                round(my_coeff[predictor, "Pr(>|z|)"], numdecp), format = "f", digits = numdecp)
             # Store unrounded p-values for FDR correction (done separately)
             pr_fdr <- my_coeff[predictor, "Pr(>|z|)"]
         # For other (linear) models
         } else if (glmmnb == FALSE) {
             pr_pvl <- formatC(
-                round(my_coeff[predictor, "Pr(>|t|)"], 4), format = "f", digits = 4)
+                round(my_coeff[predictor, "Pr(>|t|)"], numdecp), format = "f", digits = numdecp)
             # Store unrounded p-values for FDR correction (done separately)
             pr_fdr <- my_coeff[predictor, "Pr(>|t|)"]
         }
         pr_pr2 <- formatC(
-            round(my_esize$Rsq[my_esize$Effect == predictor], 2),
-            format = "f", digits = 2
+            round(my_esize$Rsq[my_esize$Effect == predictor], numdecr),
+            format = "f", digits = numdecr
         )
 
         ## **** Combine this information

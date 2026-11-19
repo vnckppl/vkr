@@ -11,6 +11,8 @@
 #' @param reffect Random Effect variable
 #' @param covariates Single covariate or array of covariates
 #' @param numdec Number of decimals for the beta and std statistics
+#' @param numdecp Number of decimals for p-values
+#' @param numdecr Number of decimals for partial-R^2
 #' @param glmmnb Set to TRUE if you want to use a Negative Binomial GLMM
 #' @param fdr Apply FDR correction (default = TRUE). Turn it off if you want to merge multiple tables later and apply FDR correction on the combined table.
 #' @param verbose Set to TRUE if you want to see the full lm output
@@ -24,6 +26,8 @@ batch_lmer_wrapper <-
              reffect,
              covariates = NULL,
              numdec = 2,
+             numdecp = 4,
+             numdecr = 2,
              glmmnb = FALSE,
              fdr = TRUE,
              verbose = FALSE
@@ -46,6 +50,8 @@ batch_lmer_wrapper <-
                                            reffect = reffect,
                                            covariates = covariates,
                                            numdec = numdec,
+                                           numdecp = numdecp,
+                                           numdecr = numdecr,
                                            glmmnb = glmmnb,
                                            verbose = verbose
                                        ))
