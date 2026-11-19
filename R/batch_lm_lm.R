@@ -13,9 +13,14 @@
 #' @param outcome Outcome measure
 #' @param predictor Predictor
 #' @param covariates Single covariate or array of covariates
+#' @param partialh2 If TRUE, then use partial-eta^2 instead of eta^2
+#' @param ss_type Type of sums of squares for effect sizes: 2 (default) for
+#' Type-II SS or 3 for Type-III SS. #' Prefer Type-III SS for models with
+#' interactions; center continuous predictors and use appropriate contrasts
+#' for categorical predictors.
 #' @param numdec Number of decimals for the beta and std statistics
 #' @param numdecp Number of decimals for p-values
-#' @param numdech Number of decimals for eta-squared
+#' @param numdech Number of decimals for (partial)-eta^2
 #' @param np If set with two values (Ca and maxIter), the code will run lmp,
 #' from the lmPerm package, i.e., fitting and testing linear models with
 #' permutation tests. Ca=Stop iterations when estimated standard error of the
@@ -31,6 +36,8 @@ batch_lm <- function(
                      outcome,
                      predictor,
                      covariates = NULL,
+                     partialh2 = FALSE,
+                     ss_type = 2,
                      numdec = 2,
                      numdecp = 4,
                      numdech = 2,
@@ -41,6 +48,11 @@ batch_lm <- function(
 
     ## ** Disable scientific notations
     options(scipen = 999)
+
+    ## ** Check requested sums of squares type
+    if (!ss_type %in% c(2, 3)) {
+        stop("`ss_type` must be either 2 (Type II) or 3 (Type III).")
+    }
 
     ## ** Parse non-parametric information
     if (is.numeric(np[1]) && is.numeric(np[2])) {
@@ -54,26 +66,24 @@ batch_lm <- function(
 
     ## ** Collapse covariates for linear model
     covariates_bkp <- covariates
-    covariates <- paste(covariates, collapse = " + ")
 
     ## ** Remove rows where there the predictor or outcome measure are NA
     df <- df[!is.na(df[[predictor]]) & !is.na(df[[outcome]]), ]
 
-    ## ** Test if the predictor variable is numeric or categorical
-    pred_class <- class(df[[predictor]])
-
-    ## ** If the predictor is a factor variable, then...
-    # if (pred_class == "factor") {
-    if ("factor" %in% class(df[[predictor]])) {
+    ## ** Test predictor type and build model formula
+    if (is.factor(df[[predictor]])) {
 
         ## *** Remove unused levels
         df[[predictor]] <- droplevels(df[[predictor]])
+
+        if (nlevels(df[[predictor]]) < 2) {
+            stop("`predictor` must have at least two observed factor levels.")
+        }
 
         ## *** Grab all groups
         groups <- levels(df[[predictor]])
 
         ## *** Create group dummies
-        # To get effect size per group, we need to create group dummies
         my_dummies <- as.data.frame(
             model.matrix(~ eval(as.symbol(predictor)) - 1, data = df)
         )
@@ -81,15 +91,22 @@ batch_lm <- function(
         names(my_dummies) <- grvars
         df <- cbind(df, my_dummies)
 
-        ## *** Build formula for linear model
-        grvars_model <- paste(grvars[2:length(grvars)], collapse = " + ")
-        my_formula <- paste(outcome, "~", covariates, "+", grvars_model)
+        ## *** Build formula: covariates + all non-reference dummy variables
+        my_formula <- stats::reformulate(
+                                 c(covariates_bkp, grvars[-1]),
+                                 response = outcome
+                             )
 
-        ## ** ...otherwise, if the predictor is a numeric variable, then...
-    } else if (length(grep("numeric", pred_class)) > 0) {
+    } else if (is.numeric(df[[predictor]])) {
 
-        ## *** Build formula for linear model
-        my_formula <- paste(outcome, "~", covariates, "+", predictor)
+        ## *** Build formula: covariates + numeric predictor
+        my_formula <- stats::reformulate(
+                                 c(covariates_bkp, predictor),
+                                 response = outcome
+                             )
+
+    } else {
+        stop("`predictor` must be numeric/integer or a factor.")
     }
 
     ## ** Run linear model
@@ -119,7 +136,38 @@ batch_lm <- function(
     }
 
     ## ** Calculate effect sizes
-    my_esize <- lsr::etaSquared(my_model)
+    ## Use ordinary lm for effect sizes when permutation testing is used
+    if (npset != TRUE) {
+        my_esize_model <- my_model
+    } else {
+        my_esize_model <- lm(
+            formula = my_formula,
+            data = df,
+            na.action = na.exclude
+        )
+    }
+
+    my_esize <- car::Anova(my_esize_model, type = ss_type)
+
+    ## *** Extract error and total sums of squares
+    ss_error <- my_esize["Residuals", "Sum Sq"]
+
+    my_outcome <- stats::model.response(
+        stats::model.frame(my_esize_model)
+    )
+    ss_total <- sum((my_outcome - mean(my_outcome))^2)
+
+    ## *** Calculate eta-squared or partial eta-squared for a model term
+    get_eta2 <- function(term, partial = FALSE) {
+        ss_effect <- my_esize[term, "Sum Sq"]
+
+        if (isTRUE(partial)) {
+            ss_effect / (ss_effect + ss_error)
+        } else {
+            ss_effect / ss_total
+        }
+    }
+
     if (verbose) print(my_esize)
 
     ## ** Extract the number of observations and dfs from the model
@@ -163,13 +211,13 @@ batch_lm <- function(
             ## ***** P-value
             if (npset != TRUE) {
                 gr_pvl <- formatC(round(
-                    my_coeff[grp, "Pr(>|t|)"], 4), format = "f", digits = numdecp)
+                    my_coeff[grp, "Pr(>|t|)"], numdecp), format = "f", digits = numdecp)
             } else {
                 ## gr_pvl <- formatC(round(
                 ##     as.data.frame(car::Anova(my_model))[grp, "Pr(>F)"], 4),
                 ##     format = "f", digits = 4)
                 gr_pvl <- formatC(round(
-                    my_coeff[grp, "Pr(Prob)"], 4), format = "f", digits = numdecp)
+                    my_coeff[grp, "Pr(Prob)"], numdecp), format = "f", digits = numdecp)
             }
 
             ## *****  Store unrounded p-values for FDR correction
@@ -181,8 +229,19 @@ batch_lm <- function(
             }
 
             ## ***** Effect size
-            gr_eta <- formatC(
-                round(my_esize[grp, "eta.sq"], 2), format = "f", digits = 2)
+            if (isTRUE(partialh2)) {
+                gr_eta <- formatC(
+                    round(get_eta2(grp, partial = TRUE), numdech),
+                    format = "f", digits = numdech
+                )
+                eta_lab <- "peta2"
+            } else if (isFALSE(partialh2)) {
+                gr_eta <- formatC(
+                    round(get_eta2(grp, partial = FALSE), numdech),
+                    format = "f", digits = numdech
+                )
+                eta_lab <- "eta2"
+            }
 
             ## ***** Combine this information
             odf <- rbind(odf, gr_est, gr_std, gr_pvl, gr_fdr, gr_eta)
@@ -191,7 +250,7 @@ batch_lm <- function(
             odf_vars <- c(
                 odf_vars,
                 paste(
-                    groups[gr], c("beta", "std", "p", "fdr", "eta2"), sep = "_")
+                    groups[gr], c("beta", "std", "p", "fdr", eta_lab), sep = "_")
             )
         }
 
@@ -200,7 +259,7 @@ batch_lm <- function(
         odf_vars <- c(odf_vars, "n")
 
         ## ** ...otherwise, if the predictor is a numeric variable, then...
-    } else if (length(grep("numeric", pred_class)) > 0) {
+    } else if (is.numeric(df[[predictor]])) {
 
         ## *** Estimate
         pr_est <- formatC(
@@ -220,14 +279,14 @@ batch_lm <- function(
         ## *** P-value
         if (npset != TRUE) {
             pr_pvl <- formatC(
-                round(my_coeff[predictor, "Pr(>|t|)"], 4),
+                round(my_coeff[predictor, "Pr(>|t|)"], numdecp),
                 format = "f", digits = numdecp)
         } else {
             ## pr_pvl <- formatC(round(
             ##     as.data.frame(car::Anova(my_model))[predictor, "Pr(>F)"], 4),
             ##     format = "f", digits = 4)
             pr_pvl <- formatC(
-                round(my_coeff[predictor, "Pr(Prob)"], 4),
+                round(my_coeff[predictor, "Pr(Prob)"], numdecp),
                 format = "f", digits = numdecp)
         }
 
@@ -240,15 +299,25 @@ batch_lm <- function(
         }
 
         ## *** Eta-squared
-        pr_eta <- formatC(
-            round(my_esize[predictor, "eta.sq"], numdech),
-            format = "f", digits = numdech)
+        if (isTRUE(partialh2)) {
+            pr_eta <- formatC(
+                round(get_eta2(predictor, partial = TRUE), numdech),
+                format = "f", digits = numdech
+            )
+            eta_lab <- "peta2"
+        } else if (isFALSE(partialh2)) {
+            pr_eta <- formatC(
+                round(get_eta2(predictor, partial = FALSE), numdech),
+                format = "f", digits = numdech
+            )
+            eta_lab <- "eta2"
+        }
 
         ## *** Combine this information
         odf <- rbind(pr_est, pr_std, pr_pvl, pr_fdr, pr_eta, my_n_to)
 
         ## *** Variable labels
-        odf_vars <- c("beta", "std", "p", "fdr", "eta2", "n")
+        odf_vars <- c("beta", "std", "p", "fdr", eta_lab, "n")
 
     }
 

@@ -9,9 +9,14 @@
 #' @param outcomes Outcome measure(s) to loop over
 #' @param predictors Predictor(s) to loop over
 #' @param covariates Single covariate or array of covariates
+#' @param partialh2 If TRUE, then use partial-eta^2 instead of eta^2
+#' @param ss_type Type of sums of squares for effect sizes: 2 (default) for
+#' Type-II SS or 3 for Type-III SS. #' Prefer Type-III SS for models with
+#' interactions; center continuous predictors and use appropriate contrasts
+#' for categorical predictors.
 #' @param numdec Number of decimals for the beta and std statistics
 #' @param numdecp Number of decimals for p-values
-#' @param numdech Number of decimals for eta-squared
+#' @param numdech Number of decimals for (partial)-eta^2
 #' @param np If set with two values (Ca and maxIter), the code will run lmp,
 #' from the lmPerm package, i.e., fitting and testing linear models with
 #' permutation tests. Ca=Stop iterations when estimated standard error of the
@@ -26,13 +31,14 @@ batch_lm_wrapper <-
              outcomes,
              predictors,
              covariates = NULL,
+             partialh2 = FALSE,
+             ss_type = 2,
              numdec = 2,
              numdecp = 4,
              numdech = 2,
              np = FALSE,
              plot = FALSE,
              verbose = FALSE
-
              ) {
 
         ## * Output data frame
@@ -46,16 +52,18 @@ batch_lm_wrapper <-
 
                 ## *** Run linear models via batch_lm and append to output
                 odf <- rbind(odf, vkr::batch_lm(
-                                           df,
-                                           outc,
-                                           pred,
-                                           covariates,
-                                           numdec,
-                                           numdecp,
-                                           numdech,
-                                           np,
-                                           plot,
-                                           verbose
+                                           df = df,
+                                           outcome = outc,
+                                           predictor = pred,
+                                           covariates = covariates,
+                                           partialh2 = partialh2,
+                                           ss_type = ss_type,
+                                           numdec = numdec,
+                                           numdecp = numdecp,
+                                           numdech = numdech,
+                                           np = np,
+                                           plot = plot,
+                                           verbose= verbose
                                        ))
             }
         }
@@ -65,4 +73,4 @@ batch_lm_wrapper <-
 
         ## * Return data frame
         return(odf)
-}
+    }

@@ -10,6 +10,8 @@ batch_lm_wrapper(
   outcomes,
   predictors,
   covariates = NULL,
+  partialh2 = FALSE,
+  ss_type = 2,
   numdec = 2,
   numdecp = 4,
   numdech = 2,
@@ -27,11 +29,18 @@ batch_lm_wrapper(
 
 \item{covariates}{Single covariate or array of covariates}
 
+\item{partialh2}{If TRUE, then use partial-eta^2 instead of eta^2}
+
+\item{ss_type}{Type of sums of squares for effect sizes: 2 (default) for
+Type-II SS or 3 for Type-III SS. #' Prefer Type-III SS for models with
+interactions; center continuous predictors and use appropriate contrasts
+for categorical predictors.}
+
 \item{numdec}{Number of decimals for the beta and std statistics}
 
 \item{numdecp}{Number of decimals for p-values}
 
-\item{numdech}{Number of decimals for eta-squared}
+\item{numdech}{Number of decimals for (partial)-eta^2}
 
 \item{np}{If set with two values (Ca and maxIter), the code will run lmp,
 from the lmPerm package, i.e., fitting and testing linear models with
