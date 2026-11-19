@@ -18,6 +18,13 @@
 #'
 #' @param idf Data frame containing one row per effect to plot. It must contain
 #'   columns named \code{label}, \code{f}, \code{model_df}, and \code{test_df}.
+#'   \code{model_df} = the total number of regression coefficients/predictor
+#'   degrees of freedom in the full model, excluding the intercept.
+#'   \code{test_df} = the number of coefficients being tested for the
+#'   effect whose power you want. Generally 1, but when you want test a variable
+#'   with 3 levels (e.g., group with 3 levels) it is 2, and when you combine
+#'   the effect of two variables (e.g., age and education) at the same time
+#'   it would also be 2.
 #' @param powers Numeric vector of desired power values for the curves. Values
 #'   must be greater than zero and less than one.
 #' @param alpha Type-I error rate. Defaults to \code{0.05}.
